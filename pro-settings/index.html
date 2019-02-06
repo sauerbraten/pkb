@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title> Settings for professional-grade Gaming | pix’s knowledge&nbsp;base </title>
+
+
+<link rel="stylesheet" href="/css/slim.css">
+
+
+<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+	<h1 class="site-title"><a href="//pkb.sauerworld.org/">pix’s knowledge&nbsp;base</a></h1>
+</div>
+		<div class="content">
+			<div class="post">
+				<h1 class="post-title"><span>Settings for professional-grade Gaming</span></h1>
+				<span class="post-date">Oct 14, 2013 </span>
+				<div class="post-content">
+					
+
+<p>Here’s two shots of the same scene, one using maxed-out graphics options with default settings, the other using gameplay-optimized graphics and settings (open these images in new tabs to compare):</p>
+
+<p><a href="https://i.imgur.com/Mg8WvLl.jpg"><img src="https://i.imgur.com/Mg8WvLl.jpg" alt="pretty" /></a></p>
+
+<p><a href="https://i.imgur.com/pha36Zc.png"><img src="https://i.imgur.com/pha36Zc.png" alt="ugly" /></a></p>
+
+<p>Nevertheless, graphics aren’t the only thing you can change in Sauerbraten, and other settings may be at least equally important, for example a mouse sensitivity you are comfortable with and key bindings that make sense to you.</p>
+
+<h1 id="graphics-settings">Graphics settings</h1>
+
+<p>Sauerbraten can be set up to look really nice, which is great and a lot of fun to look at. Luckily, it can also be set up to facilitate serious gameplay, which is about seeing things as fast as possible so that you can react to them as fast as possible.</p>
+
+<h2 id="gfx">GFX</h2>
+
+<p>You can/should turn off everything except the “fix t-joints” setting in the gfx tab of the options menu. Keep in mind that however beautiful graphical effects look, they are a distraction to your eye. How ugly you want to play the game is up to you of course. Especially water will look really bad, and it’s probably a good idea to keep the water refraction on, to be able to better see into water from above.
+You can keep textures and animation on high quality, it won’t do much to your frame rate or your concentration.</p>
+
+<h2 id="frame-rate">Frame rate</h2>
+
+<p>Turn off vsync.
+Next, find out your monitor’s refresh rate (probably 60Hz, but check for yourself in your OS’ settings). Now do <code>/maxfps 60</code> (<code>60</code> being your monitor’s refresh rate) and test if you can get stable 60 fps while playing as usual (<code>/showfps 1</code> in case you can’t see your frame rate in the bottom right corner of the screen). A good map to test this is eternal_valley. Make sure to stand somewhere high so you can overlook a good part of the map. If you’re feeling fancy, test xenon from a high position, and if that’s not enough, try kopenhagen from a high viewing point (try flying around as spectator). If you have stable 60 fps, add another 60 and try the same with <code>/maxfps 120</code>. Do this until you found a multiple of your monitors refresh rate that still gives you a stable framerate.</p>
+
+<p>Why bother doing this? A stable frame rate will result in the same amount of frames being calculated in between each refreshing cycle of the monitor. This gives you about the same amount of “change” with each new frame. This technique uses the maximum possible frame rate while making sure frame changes are smooth (due to multiples of the refresh rate). Would you set <code>maxfps</code> to, say, <code>150</code>, your monitor (assuming a refresh rate of 60Hz) would show you 1 calculated frame with the first cycle and 2 (drawn as one) in the next. Your eyes prefer the constant amount of “change” you get with the method explained above. For more info on this, read about <a href="http://en.wikipedia.org/wiki/Screen_tearing">tearing</a>.</p>
+
+<h2 id="custom-player-model-skins">Custom player model skins</h2>
+
+<p>A huge help for your eyes when looking for enemies are custom skins for the playermodels. Most widely used are the <a href="http://mdsauer.blogspot.de/p/snout-skins.html">IronsnoutX10K skins by greenadiss</a>, they are also used in the screenshot above. They are much brighter than the default ones, and you can get them in pink and yellow, too. In combination with using these skins you should enable forcing matching player models (see below) and use the Ironsnout model yourself, to ensure all enemies are shown with the new bright skins.</p>
+
+<p>On <a href="https://mdsauer.blogspot.de/">greenadiss&rsquo; modding site</a> you can also find skins for the Ogro playermodel as well as flag skins, transparent hudguns and some custom crosshairs.</p>
+
+<h1 id="mouse-acceleration">Mouse acceleration</h1>
+
+<p>A lot of professional players prefer mouse acceleration to be disabled. This will give you 1:1 responsiveness from the distance your mouse travels on the table to the amount you turn in game; regardless of what speed you move your mouse at. Normally, the OS interprets fast mouse movement different from slow mouse movement (using an acceleration factor) and accelerates cursor movement for you. This is nice when clicking around on 2D GUIs, but it can be very confusing in a 3D game. Hence, most players want it off.</p>
+
+<p>On instructions on how to turn off mouse acceleration in windows, use Google. It’s kind of complicated and involves registry changes. On Linux (using X server) it can be done on-demand using the command <code>xset m 0 0</code>. Note that it will go back to the default value when X restarts, so you should probable write a script and use your desktop’s autostart feature, or remember to execute the command every time you want to play. On OS X, I have no idea, but Google probably knows where to look.</p>
+
+<h1 id="miscellaneous-commands">Miscellaneous commands</h1>
+
+<p>These settings, again, support professional gameplay. Some of these may will have a bigger effect on your playing than the GFX settings we did before. Some of these can be set in the GUI, but for consistency’s sake they are all written out here.</p>
+
+<p>Type them into the chat console, preceeded by a <code>/</code>, e.g. <code>/fov 120</code>.</p>
+
+<ul>
+<li><code>fov 120</code> (or anything else higher than <code>100</code>, the default value): allows you to see more of your surroundings (“field of view”)</li>
+<li><code>maxroll 0</code>: disables the rolling camera effect when starting or ending a sideways movement</li>
+<li><code>zoominvel 0</code>: disables the zoom-in animation, thus making zoom instant</li>
+<li><code>zoomoutvel 0</code>: same as before, for the zoom-out animation</li>
+<li><code>hudgunsway 0</code>: disables hudgun swaying animation; resulting in less distraction for the eye from moving enemies</li>
+<li><code>muzzleflash 0</code>: disables the flashing animation when shooting</li>
+<li><code>muzzlelight 0</code>: disables the lighting effect caused by the muzzle flash</li>
+<li><code>forceplayermodels 1</code>: all players are shown as using the model you use; makes it easier to train your aiming on one kind of target</li>
+<li><code>fullbrightmodels 200</code>: makes player models shine bright</li>
+<li><code>texreduce 12</code>: reduces texture quality; think of it as blurring each texture until there is only one main color left, making the map quite ugly but also making it easier to see playermodels (this can make it harder to navigate in maps you don’t know well, so if you have problems, turn it off (<code>texreduce 0</code>) or to a lower level (e.g. <code>texreduce 6</code>).)</li>
+<li><code>bind MOUSE2 togglezoom</code>: binds zoom to right mouse button; you’ll have to get used to jumping with the space bar</li>
+<li><code>bind MOUSE2 [deaths = (getdeaths); togglezoom; onrelease [if (&lt;= (getdeaths) $deaths) [togglezoom]]]</code>: same as before, but zooms out when you release the right mouse button; useful for quickscoping; the <code>getdeaths</code> stuff is in there because Sauerbraten automatically zooms out when you die, so when you die holding the right mouse button, releasing it would zoom in&hellip;</li>
+</ul>
+
+				</div>
+			</div>
+			<div class="pagination">
+				
+				<a class="btn previous " href="//pkb.sauerworld.org/screen-recording/">Prev</a>
+				
+				
+				<a class="btn next " href="//pkb.sauerworld.org/auth/">Next</a>
+				
+			</div>
+		</div>
+		<div class="footer">
+	<p>All content © 2013-2018 pix.<br>Powered by <a href="https://gohugo.io">Hugo</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+</div>
+	</div>
+</body>
+
+</html>

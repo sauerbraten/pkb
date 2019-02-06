@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  
+  <url>
+    <loc>//pkb.sauerworld.org/np-position-packet/</loc>
+    <lastmod>2014-03-28T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/np-connecting-to-server/</loc>
+    <lastmod>2014-03-17T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/screen-recording/</loc>
+    <lastmod>2013-11-12T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/pro-settings/</loc>
+    <lastmod>2013-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/auth/</loc>
+    <lastmod>2013-10-08T00:00:00+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/post/</loc>
+    <lastmod>2014-03-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/tags/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>//pkb.sauerworld.org/</loc>
+    <lastmod>2014-03-28T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

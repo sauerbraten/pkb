@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title> Screen Recording | pix’s knowledge&nbsp;base </title>
+
+
+<link rel="stylesheet" href="/css/slim.css">
+
+
+<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+	<h1 class="site-title"><a href="//pkb.sauerworld.org/">pix’s knowledge&nbsp;base</a></h1>
+</div>
+		<div class="content">
+			<div class="post">
+				<h1 class="post-title"><span>Screen Recording</span></h1>
+				<span class="post-date">Nov 12, 2013 </span>
+				<div class="post-content">
+					
+
+<p>In order to be able to show off how good you are in front of your friends, or to show the world something interesting, or to just record yourself playing for fun, you need to record the screen output rendered by Sauerbraten. To do this, there are different methods; here they are explained:</p>
+
+<h1 id="recording">Recording</h1>
+
+<h2 id="the-built-in-movie-command">The built-in <code>/movie</code> command</h2>
+
+<p>Sauerbraten has a built-in command to record the frames it renders and write them to a file: <code>/movie</code>. It is however of little use: it generates huge .avi files containing all the individual frames, without any compression at all. Nevertheless, some people might want this, and big files might not be a problem, so here is some explanation on how to use <code>/movie</code>.</p>
+
+<p>Before you start recording, you should set a few things up:</p>
+
+<ul>
+<li><code>/moviesound 1|0</code> specifies wether sound will be included in the recorded .avi file</li>
+<li><code>/moview 1920</code> sets the width of the recording in pixels, replace 1920 with e.g. 1280 for 720p recording</li>
+<li><code>/movieh 1080</code> sets the height of the recording in pixels, again, replace 1080 with 720 to record in 720p</li>
+<li><code>/moviefps 30</code> sets the frame rate at which recording will take place; 30 will suffice if you do not intend to make slow-motion clips (if you do, read on, it’s explained further down)</li>
+</ul>
+
+<p>If you have set up all that, start a recording with <code>/movie asdf</code>, with <code>asdf</code> being the name of the file the recorded frames are saved to (asdf.avi in this case). To stop recording, just type <code>/movie</code>.</p>
+
+<h2 id="external-screen-recording-software">External screen recording software</h2>
+
+<p>Since the <code>/movie</code> command produces big files and is kind of clumsy, it makes sense to use an external screen recording software. For Windows, there is FRAPS, a widely-used and well-known program. There is probably a lot of information out there on how to record games with it already, so Google can probably help you. For Linux, <a href="http://www.maartenbaert.be/simplescreenrecorder/">Simple Screen Recorder</a> works well using the OpenGL recording feature (experimental at the time of writing, but known to work with Sauer). However, due to the way Sauerbraten is launched, you need to know a few things. Here’s a short guide:</p>
+
+<ol>
+<li>Tick the “Record OpenGL” option</li>
+<li>Click on “OpenGL settings”</li>
+<li>As command, use <code>/path/to/sauerbraten/bin_unix/linux_64_client -q~/.sauerbraten -k/path/to/sauerbraten</code> (with the correct path to your Sauerbraten folder of course)</li>
+<li>Set “Frame rate” to 30 (or higher if you want)</li>
+<li>Unselect  “Scale video”</li>
+<li>Tick “Record cursor”</li>
+<li>Click “Continue”</li>
+<li>Next, select file name and codecs (MP4 as container, H.264 as video codec, AAC as audio codec is fine)</li>
+<li>Before clicking “Continue”, start Sauerbraten</li>
+<li>Set the desired resolution, and set <code>/maxfps 30</code> (or whatever you used in SSR). Maybe use windowed mode to be able to easily switch between Sauer and SSR</li>
+<li>Close Sauerbraten using the menu, so it can save your settings</li>
+<li>In SSR, click “Continue”</li>
+<li>When you are ready to record, click “Start recording” in SSR</li>
+</ol>
+
+<h1 id="demo-playback">Demo playback</h1>
+
+<p>In case you do not want to record yourself playing live, you can use Sauerbraten’s demo file functionality. You can get demo files from most online servers, either using the <code>/listdemos</code> and <code>/getdemo</code> commands, or by downloading them from the website advertised on the server.</p>
+
+<p>Here are some useful commands for demo playback:</p>
+
+<ul>
+<li><code>/demo &lt;file.dmo&gt;</code>: starts demo playback</li>
+<li><code>/gamespeed 10..1000</code>: controls gamespeed; sounds stay the same however (chain gun sound playback rate is adjusted of course); 100 is default (think of it as percent)</li>
+<li><code>/pausegame 1|0</code>: pauses/resumes game</li>
+<li><code>/thirdperson 0..2</code>: 0 means first person view, 1 is fixed third person view (you see your character from behind), 2 is a freely rotating third person view (you can’t aim with your mouse anymore)</li>
+</ul>
+
+<p>A smart way to use the <code>/gamespeed</code> command is to do <code>/gamespeed 50</code> (or something like that), then after recording speeding up video by 2 times, except for scenes you want to be slow-mo. Using this method you don’t have a problem with low frame rates in slowed down scenes, but on the other hand sounds will need fixing probably.</p>
+
+<p>The <a href="http://ogros.org/forum/viewtopic.php?f=77&amp;t=1733">Wahn/Wonder Client</a> offers an easy way of jumping to a certain time in a demo: <code>/jumpto &lt;mm:[ss]&gt;</code> will jump to <code>mm</code> minutes (and <code>ss</code> seconds) left to play (note: you can’t jump backwards in demos).</p>
+
+<p>If you are using a vanilla client, it might be a good idea to make binds for changing the game speed to allow fast-forwarding, for example <code>gamespeed 1000</code> on <code>RIGHT</code>, <code>gamespeed 50</code> on <code>LEFT</code>, <code>gamespeed 100</code> on <code>UP</code>, or to do something like <code>/bind RIGHT [gamespeed 1000; onrelease gamespeed 100]</code>.</p>
+
+<p>You can find more about demos on <a href="http://ogros.org/tips-a-tricks/51-all-about-demos.html">ogros.org</a>.</p>
+
+				</div>
+			</div>
+			<div class="pagination">
+				
+				<a class="btn previous " href="//pkb.sauerworld.org/np-connecting-to-server/">Prev</a>
+				
+				
+				<a class="btn next " href="//pkb.sauerworld.org/pro-settings/">Next</a>
+				
+			</div>
+		</div>
+		<div class="footer">
+	<p>All content © 2013-2018 pix.<br>Powered by <a href="https://gohugo.io">Hugo</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+</div>
+	</div>
+</body>
+
+</html>

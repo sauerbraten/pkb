@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title> Network Protocol: Connecting to a Server | pix’s knowledge&nbsp;base </title>
+
+
+<link rel="stylesheet" href="/css/slim.css">
+
+
+<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+
+
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
+<link rel="shortcut icon" href="/favicon.ico">
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+	<h1 class="site-title"><a href="//pkb.sauerworld.org/">pix’s knowledge&nbsp;base</a></h1>
+</div>
+		<div class="content">
+			<div class="post">
+				<h1 class="post-title"><span>Network Protocol: Connecting to a Server</span></h1>
+				<span class="post-date">Mar 17, 2014 </span>
+				<div class="post-content">
+					
+
+<p>Have you ever wondered what’s going on under the hood when you play a game of efficiency ctf, with all that action of players shooting, jumping, dying, picking up flags, and spectators chatting? Here’s the explanation! Read on and learn how Sauerbraten’s networking works.</p>
+
+<p>Sauerbraten’s networking code is based on the <a href="http://enet.bespin.org/">ENet library</a>. Without going into too much detail, ENet is a layer on top of <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a> offering (optional) sequential and/or reliable transmission of packets (similar to <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a>), the concept of using multiple channels on one connection, and more.</p>
+
+<p><em>For this article, we assume a simple connect to a vanilla server with default config, nothing fancy like auth-on-connect or server passwords will be covered in-depth.</em></p>
+
+<h2 id="channels">Channels</h2>
+
+<p>Sauerbraten uses 3 channels for communication between server and client:</p>
+
+<ul>
+<li>channel 0 is for transmitting position data (that is, where in the map is a client?)</li>
+<li>channel 1 is for game events, like a player shooting, a player using a teleport, a player joining the game, chat messages, and much more</li>
+<li>channel 2 is used in “coop edit” mode to send maps (<code>/sendmap</code> and <code>/getmap</code>)</li>
+</ul>
+
+<h2 id="requesting-a-cn-and-server-information">Requesting a CN and server information</h2>
+
+<p>When you try to connect to a server (for example by clicking on it in the server browser), your client will establish a connection to the server over ENet. The server will notice that you want to connect and will add you as a client and assign you a client number (CN). The server will then reply with a “server info” packet, which looks something like this (when you display the decimal values of the bytes):</p>
+
+<pre><code>1 0 128 3 1 129 184 252 162 0 0 108 111 99 97 108 32 116 101 115 116 32
+115 101 114 118 101 114 32 50 0 0
+</code></pre>
+
+<p>Here’s a short listing of the parts that make up a “server info” packet, followed by a more detailed explanation:</p>
+
+<pre><code>1                   → N_SERVINFO
+0                   → cn given to you by the server
+128 3 1             → protocol number (3 + 256 = 259)
+129 184 252 162 0   → session ID (184 + 64512 + 10616832 + 0 = 10681528)
+0                   → not password-protected
+108 111 ...  50 0   → server description (&quot;local test server 2&quot;)
+0                   → server auth domain (&quot;&quot;)
+</code></pre>
+
+<h4 id="n-servinfo"><code>N_SERVINFO</code></h4>
+
+<p>The <code>N_SERVINFO</code> byte is part of a list of network message codes that is known to the client and the server (you can find that list in <code>src/fpsgame/game.h</code>). <code>N_SERVINFO</code> just happens to have <code>1</code> as its byte representation; it doesn’t really matter what value it is, as long as the client and server both know the meaning of it.</p>
+
+<h4 id="cn"><code>cn</code></h4>
+
+<p>The next number is the CN the server assigned to your connection. If you are the first client to connect to a server, it is usually <code>0</code>. Connecting clients get the lowest free number (not a requirement, but it is this way in the vanilla server and in all server mods).</p>
+
+<h4 id="protocol-number"><code>protocol number</code></h4>
+
+<p>Next up is the protocol number (<code>259</code> in collect edition). Don’t get confused by the weird three byte representation; it will be explained later.</p>
+
+<h4 id="session-id"><code>session ID</code></h4>
+
+<p>The session ID is always generated, but only actually used when the server requires you to provide a password in order to connect. The password you type in is hashed together with this session ID and your CN, and only the hash is then sent to the server and compared to the server’s hash.</p>
+
+<h4 id="passwort-protected-indicator"><code>passwort-protected indicator</code></h4>
+
+<p>The following byte can be either <code>0</code> or <code>1</code>, and indicates if the server requires you to provide a password or not.</p>
+
+<h4 id="server-description"><code>server description</code></h4>
+
+<p>The server description (C/C++ strings always end with a <code>0x00</code> byte). This is the same description that you can also read in your server browser.</p>
+
+<h4 id="server-auth-domain"><code>server auth domain</code></h4>
+
+<p>Last comes the server’s auth domain for which a connecting client has to provide an auth key in order to be let in (an empty string signals the server does not use auth-on-connect; however, it does not mean the server doesn’t use local auth domains at all).</p>
+
+<h3 id="note-regarding-integer-compression">Note regarding integer compression</h3>
+
+<p>Notice how the protocol number (<code>259</code> in collect edition) consists of three bytes (also, the CN was only one byte even though it is a <code>uint32</code> internally and should be four bytes): this is because Sauerbraten uses an encoding for integer numbers that saves bandwitdh:</p>
+
+<ul>
+<li>values less than <code>128</code> and greater than <code>-127</code> (i.e. fit into one byte) will simply be sent as one byte</li>
+<li>values that would fit into two bytes are sent as two bytes, preceeded by a <code>0x80</code> byte (<code>128</code> in decimal)</li>
+<li>all other values will be sent as their normal four bytes, preceeded by a <code>0x81</code> byte (<code>129</code> in decimal)</li>
+</ul>
+
+<p>This works well for Sauerbraten even though big numbers need five bytes instead of just four, since most numbers sent are small and only take up one byte or two bytes (three after encoding).</p>
+
+<h2 id="joining-the-game">Joining the game</h2>
+
+<p>After receiving a CN, Session ID and the server information, the client replies with a <code>N_CONNECT</code> packet, which looks like this:</p>
+
+<pre><code>0 124 121 101 115 86 73 58 112 105 120 0 1 0 0 0
+
+0                   → N_CONNECT
+124 121 ... 120 0   → player name (&quot;|yesVI:pix&quot;)
+1                   → player model ID
+0                   → connect password hash (&quot;&quot;)
+0                   → auth domain (&quot;&quot;)
+0                   → auth name (&quot;&quot;)
+</code></pre>
+
+<h4 id="n-connect"><code>N_CONNECT</code></h4>
+
+<p><code>N_CONNECT</code> (like <code>N_SERVINFO</code>) tells the server what kind of packet this is so it knows what parts will come next.</p>
+
+<h4 id="player-name"><code>player name</code></h4>
+
+<p>The next bytes up to a <code>0x00</code> byte are the player’s name.</p>
+
+<h4 id="player-model-id"><code>player model ID</code></h4>
+
+<p>Up next is the ID of the player model the client uses, so that other clients know what player model to show for that player.</p>
+
+<h4 id="connect-password-hash"><code>connect password hash</code></h4>
+
+<p>Next comes a string (all bytes up to <code>0x00</code>) containing the hashed connect password the user entered, in case the <code>N_SERVINFO</code> packet told the client that this server is password protected.</p>
+
+<h4 id="auth-domain-and-auth-name"><code>auth domain</code> and <code>auth name</code></h4>
+
+<p>Last come the auth domain (which is the same as the server auth domain the server sent in the <code>N_SERVINFO</code> packet) as a string and the name corresponding to the auth key the client found for the specified auth domain. For more information on the auth system in Sauerbraten, read the article on <a href="/auth/">Sauerbraten’s Auth Mechanism</a>.</p>
+
+<p>Personal note: I find <code>N_CONNECT</code> to be a very confusing name for this packet: on the ENet level, you are already connected when you get the <code>N_SERVINFO</code> packet. “<code>N_JOIN</code>” would be a more apt name I think.)</p>
+
+<h2 id="welcoming-the-client">Welcoming the client</h2>
+
+<p>When the server receives the <code>N_CONNECT</code> packet, it checks for a number of things:</p>
+
+<ul>
+<li>is the password correct? (if needed)</li>
+<li>if not, is the server in private mode maybe?</li>
+<li>is the auth key valid? (if needed)</li>
+<li>is there a free spot (server not full)?</li>
+<li>is the IP that connected banned?</li>
+</ul>
+
+<p>If everything is OK, it prepares the client’s on-server representation for playing and then sends a welcome packet back to the client that joined.</p>
+
+<p>The server then welcomes the client by sending a number of packets. Here is a (small) example of that list of packets making up the “welcome packet&rdquo;:</p>
+
+<pre><code>2 22 114 101 105 115 115 101 110 0 5 0 33 87 58 1 3 1 -1 61 0 103 111
+111 100 0 -1 17 0 0 100 100 100 1 2 20 20 10 10 20 0 37 1 0 12 1 0 3
+100 100 100 1 2 16 4 3 8 15 0 -1 3 1 67 111 111 107 105 101 0 101 118
+105 108 0 1
+
+2                    → N_WELCOME
+
+22                   → N_MAPCHANGE
+114 101 ... 110 0    → map name (&quot;reissen&quot;)
+5                    → game mode (effic)
+0                    → whether or not the server has representations
+                       for items (quad, health boost, etc); 0 means it
+                       already has them
+
+33                   → N_TIMEUP
+87                   → seconds left to play
+
+58                   → N_CURRENTMASTER
+1                    → veto
+3                    → a CN
+1                    → the privilege of client with CN 3
+-1                   → end of privileges list
+
+61                   → N_SETTEAM
+0                    → CN of the client whose team to set (= client
+                       receiving this packet)
+103 111 111 100 0    → team name (&quot;good&quot;)
+-1                   → end of N_SETTEAM packet
+
+17                   → N_SPAWNSTATE
+0                    → CN of the client the spawn state date belongs to
+                       (= client receiving this packet)
+0                    → client’s life sequence (changes at every
+                       respawn)
+100                  → client’s health
+100                  → maximum health the player can have (can
+                       change when health boost is picked up)
+100                  → armour
+1                    → armour type (pre-defined constant: 0 = blue,
+                       1 = green, 2 = yellow)
+2                    → weapon the player is currently using (pre-
+                       defined: 2 = minigun)
+20                   → shotgun ammo
+20                   → minigun ammo
+10                   → rocket launcher ammo
+10                   → rifle ammo
+20                   → grenades ammo
+0                    → pistol ammo
+
+37                   → N_RESUME
+1                    → CN of another player
+0                    → player 1’s current state (0 = alive, ...)
+12                   → frags
+1                    → flags player 1 scored
+0                    → time left for player 1’s quad damage, if he
+                       has it
+3                    → player 1’s life sequence (changes at every
+                       respawn)
+100                  → player 1’s health
+100                  → maximum health the player can have (can change
+                       when health boost is picked up)
+100                  → armour
+1                    → armour type (pre-defined constant: 0 = blue,
+                       1 = green, 2 = yellow)
+2                    → weapon the player is currently using (pre-
+                       defined: 2 = minigun)
+16                   → shotgun ammo
+4                    → minigun ammo
+3                    → rocket launcher ammo
+8                    → rifle ammo
+15                   → grenades ammo
+0                    → pistol ammo
+-1                   → end of N_RESUME packet
+
+3                    → N_INITCLIENT
+1                    → CN of another client
+67 111 ... 101 0     → name of client with above CN (&quot;Cookie&quot;)
+101 118 105 108 0    → team name of client with above CN (&quot;evil&quot;)
+1                    → player model ID of client with above CN
+</code></pre>
+
+<p>Basically, every time you see a network message code (<code>N_*</code>), a new game packet begins:</p>
+
+<ul>
+<li><code>N_WELCOME</code> tells the client to close the server browser in case it is open</li>
+<li><code>N_MAPCHANGE</code> tells the client what map to load and what mode is played on that map</li>
+<li><code>N_TIMEUP</code> tells the client how many seconds are left to play (so the clock is set correctly when joining mid-game)</li>
+<li><code>N_CURRENTMASTER</code> is followed by the master mode currently set on the server and a list of CNs of players with higher than normal privilege (this list can be empty; the end is marked by a <code>-1</code>)</li>
+<li><code>N_SETTEAM</code> tells the client what team the player was put into</li>
+<li><code>N_SPAWNSTATE</code> tells the client what state to use when the player spawns</li>
+<li><code>N_RESUME</code> tells the client to start the countdown and is followed by a list of the current game state of each client already connected to the server (again, ends when <code>-1</code> is read)</li>
+<li>now, one or more <code>N_INITCLIENT</code> packets follow, each describing a client’s name, team and player model (if more than one client are connected, there will be multiple <code>N_INITCLIENT</code> packets)</li>
+</ul>
+
+<p>After the server sent the above packet to the new client, it will notify all other clients of the newly connected client by sending a <code>N_INITCLIENT</code> packet to each of them containing the info of the new client. In case the new client was automatically set to spectator (e.g. when the server is locked), all other clients will also receive a <code>N_SPECTATOR</code> packet.</p>
+
+<p>At the end of all this, the client is now doing all the stuff it has to do in order to get “up-to-speed” with the other players, i.e. load the map, put itself into the correct team, set the local player’s spawn state, etc. As far as the server is concerned, the client is now treated exactly the same as all the other clients, because the process of joining the current game is now finished.</p>
+
+				</div>
+			</div>
+			<div class="pagination">
+				
+				<a class="btn previous " href="//pkb.sauerworld.org/np-position-packet/">Prev</a>
+				
+				
+				<a class="btn next " href="//pkb.sauerworld.org/screen-recording/">Next</a>
+				
+			</div>
+		</div>
+		<div class="footer">
+	<p>All content © 2013-2018 pix.<br>Powered by <a href="https://gohugo.io">Hugo</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+</div>
+	</div>
+</body>
+
+</html>
