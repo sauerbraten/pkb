@@ -2,57 +2,57 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>pix’s knowledge base on pix’s knowledge base</title>
-		<link>//pkb.sauerworld.org/</link>
+		<link>/</link>
 		<description>Recent content in pix’s knowledge base on pix’s knowledge base</description>
 		<generator>Hugo -- gohugo.io</generator>
 		<language>en-us</language>
 		<lastBuildDate>Fri, 28 Mar 2014 00:00:00 +0000</lastBuildDate>
 		<atom:link href="/" rel="self" type="application/rss+xml" />
-		
+
 		<item>
 			<title>Network Protocol: The Position Packet</title>
-			<link>//pkb.sauerworld.org/np-position-packet/</link>
+			<link>/np-position-packet/</link>
 			<pubDate>Fri, 28 Mar 2014 00:00:00 +0000</pubDate>
 			<author>pix</author>
-			<guid>//pkb.sauerworld.org/np-position-packet/</guid>
+			<guid>/np-position-packet/</guid>
 			<description>Explains the position packet and how its contents are compressed and interpreted.</description>
 		</item>
-		
+
 		<item>
 			<title>Network Protocol: Connecting to a Server</title>
-			<link>//pkb.sauerworld.org/np-connecting-to-server/</link>
+			<link>/np-connecting-to-server/</link>
 			<pubDate>Mon, 17 Mar 2014 00:00:00 +0000</pubDate>
 			<author>pix</author>
-			<guid>//pkb.sauerworld.org/np-connecting-to-server/</guid>
+			<guid>/np-connecting-to-server/</guid>
 			<description>Detailed explanation of how a client connects to a server and joins the game.</description>
 		</item>
-		
+
 		<item>
 			<title>Screen Recording</title>
-			<link>//pkb.sauerworld.org/screen-recording/</link>
+			<link>/screen-recording/</link>
 			<pubDate>Tue, 12 Nov 2013 00:00:00 +0000</pubDate>
 			<author>pix</author>
-			<guid>//pkb.sauerworld.org/screen-recording/</guid>
+			<guid>/screen-recording/</guid>
 			<description>Explains the different methods of recording Sauerbraten gameplay.</description>
 		</item>
-		
+
 		<item>
 			<title>Settings for professional-grade Gaming</title>
-			<link>//pkb.sauerworld.org/pro-settings/</link>
+			<link>/pro-settings/</link>
 			<pubDate>Mon, 14 Oct 2013 00:00:00 +0000</pubDate>
 			<author>pix</author>
-			<guid>//pkb.sauerworld.org/pro-settings/</guid>
+			<guid>/pro-settings/</guid>
 			<description>This post describes some settings that can help you improve your gameplay.</description>
 		</item>
-		
+
 		<item>
 			<title>The Auth Mechanism</title>
-			<link>//pkb.sauerworld.org/auth/</link>
+			<link>/auth/</link>
 			<pubDate>Tue, 08 Oct 2013 00:00:00 +0200</pubDate>
 			<author>pix</author>
-			<guid>//pkb.sauerworld.org/auth/</guid>
+			<guid>/auth/</guid>
 			<description>Explains what the /auth command does, and how it does it.</description>
 		</item>
-		
+
 	</channel>
 </rss>
