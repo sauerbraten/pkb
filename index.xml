@@ -6,9 +6,18 @@
 		<description>Recent content in pix’s knowledge base on pix’s knowledge base</description>
 		<generator>Hugo -- gohugo.io</generator>
 		<language>en-us</language>
-		<lastBuildDate>Fri, 28 Mar 2014 00:00:00 +0000</lastBuildDate>
+		<lastBuildDate>Mon, 18 Feb 2019 00:00:00 +0000</lastBuildDate>
 		<atom:link href="/" rel="self" type="application/rss+xml" />
-
+		
+		<item>
+			<title>notas’ Guide for New Players</title>
+			<link>/notas-guide/</link>
+			<pubDate>Mon, 18 Feb 2019 00:00:00 +0000</pubDate>
+			<author>pix</author>
+			<guid>/notas-guide/</guid>
+			<description>Quick-start guide for players coming from other Arena FPS games.</description>
+		</item>
+		
 		<item>
 			<title>Network Protocol: The Position Packet</title>
 			<link>/np-position-packet/</link>
@@ -17,7 +26,7 @@
 			<guid>/np-position-packet/</guid>
 			<description>Explains the position packet and how its contents are compressed and interpreted.</description>
 		</item>
-
+		
 		<item>
 			<title>Network Protocol: Connecting to a Server</title>
 			<link>/np-connecting-to-server/</link>
@@ -26,7 +35,7 @@
 			<guid>/np-connecting-to-server/</guid>
 			<description>Detailed explanation of how a client connects to a server and joins the game.</description>
 		</item>
-
+		
 		<item>
 			<title>Screen Recording</title>
 			<link>/screen-recording/</link>
@@ -35,7 +44,7 @@
 			<guid>/screen-recording/</guid>
 			<description>Explains the different methods of recording Sauerbraten gameplay.</description>
 		</item>
-
+		
 		<item>
 			<title>Settings for professional-grade Gaming</title>
 			<link>/pro-settings/</link>
@@ -44,7 +53,7 @@
 			<guid>/pro-settings/</guid>
 			<description>This post describes some settings that can help you improve your gameplay.</description>
 		</item>
-
+		
 		<item>
 			<title>The Auth Mechanism</title>
 			<link>/auth/</link>
@@ -53,6 +62,6 @@
 			<guid>/auth/</guid>
 			<description>Explains what the /auth command does, and how it does it.</description>
 		</item>
-
+		
 	</channel>
 </rss>
