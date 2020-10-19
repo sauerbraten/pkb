@@ -13,7 +13,7 @@
     
     <subtitle></subtitle>
     <generator>blades</generator>
-    <updated>2020-10-19T23:33:03Z</updated>
+    <updated>2020-10-19T23:39:26Z</updated>
 
 
     <entry>
@@ -57,7 +57,7 @@
 <p>The last two lines of code move the destination of the ray along the ray until it collides with something in the world, for example the wall or (ideally) an enemy's player model. This is done by calculating a normalized vector <code>dir</code> of the ray's direction from its start (<code>from</code>) and end (<code>dest</code>) vectors, and then relying on the engine to set <code>dest</code> to the point where this vector <code>dir</code>, starting at <code>from</code> intersects with something that would stop a projectile. Essentially, this makes sure the ray doesn't end in front of the player or goes through her model without hitting or has the ray end somewhere beside the player in the middle of the air.</p>
 <p>Now back to why <code>offset.z /= 2</code> is so interesting here: For you as a player, this line means <strong>shots are more accurate when you are at the same height as your target</strong>! If it's not obvious, think about the sphere of possible offset vectors around the target: because the offset vector's z component is reduced by the <code>/= 2</code> operation, the sphere of possible offsets around the target is no longer a sphere, but more of a pumpkin! At the very end, what matters is the 2D projection of this pumpkin towards the players camera, since the depth component of the offset vector in relation to the player's camera is irrelevant (the end point of the ray is recalculated after offsetting the shot). Seen from eye level (that is, perfectly horizontal), the surface area of the sphere of possible offset vectors got smaller by compressing it along the z-axis, but seen from above, it's still the same size! This means player's benefit less from this compression, the greater the difference in z height of the start and end of the shot, i.e. the player and their target!</p>
 </content>
-        <updated>2020-10-19T00:00:00Z</updated>
+        <updated>2020-10-20T00:00:00Z</updated>
     </entry>
     
 

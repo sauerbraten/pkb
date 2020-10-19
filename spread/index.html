@@ -28,7 +28,7 @@
 			
 			<div class="post">
 				<h1 class="post-title"><span>Projectile spread</span></h1>
-				<span class="post-date">Oct 19, 2020</span>
+				<span class="post-date">Oct 20, 2020</span>
 				<div class="post-content">
 					<p>Today in the Sauerworld Discord (<a href="https://discord.gg/j3kyxtj">join here</a>), we talked about the chaingun (aka minigun, aka machine gun) and shotgun damage and how their rays spread around your crosshair. Games like Counter-Strike aim for realistic projectile spread induced by the weapon's recoil: your crosshair (and with it, projectile vectors) tend to move upwards the longer you burst-fire, and players learn to correct for it by moving the crosshair down. Some weapons in some games also have projectiles spreading outwards around your crosshair, with the spread usually increasing the longer you hold the trigger.</p>
 <p>Sauerbraten, in contrast to most shooter games you may be playing, only has very simple projectile spread mechanics. Since Sauer is open-source, let's understand the details by taking a look behind the scenes! The following code is taken directly from Sauerbraten's <a href="https://sourceforge.net/p/sauerbraten/code/6205/tree/src/fpsgame/weapon.cpp#l118">source code (<code>src/fpsgame/weapon.cpp</code>)</a>:</p>
