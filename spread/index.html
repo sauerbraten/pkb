@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix">
+
+	<title>Projectile spread | pix’s knowledge&nbsp;base</title>
+
+	
+	
+	<link rel="stylesheet" href="/assets/slim.css">
+
+	<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+
+	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+	<h1 class="site-title"><a href="/">pix’s knowledge&nbsp;base</a></h1>
+</div>
+
+		<div class="content">
+			
+			<div class="post">
+				<h1 class="post-title"><span>Projectile spread</span></h1>
+				<span class="post-date">Oct 19, 2020</span>
+				<div class="post-content">
+					<p>Today in the Sauerworld Discord (<a href="https://discord.gg/j3kyxtj">join here</a>), we talked about the chaingun (aka minigun, aka machine gun) and shotgun damage and how their rays spread around your crosshair. Games like Counter-Strike aim for realistic projectile spread induced by the weapon's recoil: your crosshair (and with it, projectile vectors) tend to move upwards the longer you burst-fire, and players learn to correct for it by moving the crosshair down. Some weapons in some games also have projectiles spreading outwards around your crosshair, with the spread usually increasing the longer you hold the trigger.</p>
+<p>Sauerbraten, in contrast to most shooter games you may be playing, only has very simple projectile spread mechanics. Since Sauer is open-source, let's understand the details by taking a look behind the scenes! The following code is taken directly from Sauerbraten's <a href="https://sourceforge.net/p/sauerbraten/code/6205/tree/src/fpsgame/weapon.cpp#l118">source code (<code>src/fpsgame/weapon.cpp</code>)</a>:</p>
+<pre><code class="language-c++">void offsetray(const vec &amp;from, const vec &amp;to, int spread, float range, vec &amp;dest)
+{
+    vec offset;
+    do offset = vec(rndscale(1), rndscale(1), rndscale(1)).sub(0.5f);
+    while(offset.squaredlen() &gt; 0.5f*0.5f);
+    offset.mul((to.dist(from)/1024)*spread);
+    offset.z /= 2;
+    dest = vec(offset).add(to);
+    if(dest != from)
+    {
+        vec dir = vec(dest).sub(from).normalize();
+        raycubepos(from, dir, dest, range, RAY_CLIPMAT|RAY_ALPHAPOLY);
+    }
+}
+</code></pre>
+<p>Some things to note before we dive into this function:</p>
+<ul>
+<li>the function calculates the offset for a single ray</li>
+<li>it's the only function to calculate ray offset (= projectile spread) in the source code, which means the overall spread calculation is the same for all weapons that have spread (currently, chaingun, shotgun and pistol)</li>
+<li>however, it takes a <code>spread</code> argument, so the output is not neccessarily the same for all weapons</li>
+<li>the function is called with the same <code>spread</code> argument for every ray of a weapon, meaning <strong>chaingun spread does not increase with time</strong></li>
+</ul>
+<p>So what does this function do, exactly?</p>
+<p>The first two arguments tell the function <code>from</code> where <code>to</code> where in the map the player is shooting. Then there are the <code>spread</code> and <code>range</code> arguments, which are taken from the weapon's defined settings. (These weapon settings are set in the source code, and can't be changed in-game. Other weapon settings would be how much damage a ray deals and how long it takes to reload.) The last argument, <code>dest</code>, is a variable that will hold the destination of the offset ray after the function ran. (In other programming languages, this would be the return value of the function, so let's just call it that from now on.)</p>
+<p>From a high-level point of view, the function calculates a single ray's destination vector by preparing an offset vector which it adds to the vector pointing from the player to the target, i.e. offsetting the ray from the vector connecting <code>from</code> and <code>to</code>. It returns the vector pointing from <code>from</code> to the offset target as the <code>dest</code> vector.</p>
+<p>The first three lines, <code>vec offset; do ... while ...;</code> prepare a vector variable with three components (x, y and z) and try random values between -0.5 and 0.5 for each component, until it finds a vector where x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup> is greater than 0.25. This basically means the offset vector can point in any direction, but its magnitude is limited to a sphere of radius 0.5. Although this explicitly prevents the case that x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup> = 0, it does not mean that this function will never produce a ray that goes exactly straight: the offset vector might point parallel to the direction of the shot, so offsetting the ray will only make it point behind or in front of the original target! You might get lucky and get a straight shot even with your chaingun!</p>
+<p>The next line, <code>offset.mul(...);</code> makes it so long range shots are offset more than short range ones. It uses the shot distance (<code>to.dist(from)</code>), scales it by a magic factor of 1/1024, and then scales it again by the weapon's spread setting (currently 100 for chaingun, 400 for shotgun, 50 for pistol). The entire offset vector is then scaled by the result of all that scaling of the shot distance.</p>
+<p>The following line, <code>offset.z /= 2;</code> is very interesting: <code>z</code> is the up-down axis in Sauer (if you jump, your z coordinate increases, if you fall down like a noob on reissen, it decreases). The <code>/= 2</code> bit means the z component is halfed. We will get to what this means for you as a player later!</p>
+<p><code>dest = vec(offset).add(to);</code> simply defines <code>dest</code> as the position where the offset ray ends, by adding the offset vector to the position vector of the target of the shot.</p>
+<p>The next line ensures that the calculated ray doesn't end where it starts, for reasons I am not sure why. It might have to do with Sauer's spawn kill protection, but it's really just my best guess here. In the cases interesting to us, this will never be the case, so the code inside the braces will run.</p>
+<p>The last two lines of code move the destination of the ray along the ray until it collides with something in the world, for example the wall or (ideally) an enemy's player model. This is done by calculating a normalized vector <code>dir</code> of the ray's direction from its start (<code>from</code>) and end (<code>dest</code>) vectors, and then relying on the engine to set <code>dest</code> to the point where this vector <code>dir</code>, starting at <code>from</code> intersects with something that would stop a projectile. Essentially, this makes sure the ray doesn't end in front of the player or goes through her model without hitting or has the ray end somewhere beside the player in the middle of the air.</p>
+<p>Now back to why <code>offset.z /= 2</code> is so interesting here: For you as a player, this line means <strong>shots are more accurate when you are at the same height as your target</strong>! If it's not obvious, think about the sphere of possible offset vectors around the target: because the offset vector's z component is reduced by the <code>/= 2</code> operation, the sphere of possible offsets around the target is no longer a sphere, but more of a pumpkin! At the very end, what matters is the 2D projection of this pumpkin towards the players camera, since the depth component of the offset vector in relation to the player's camera is irrelevant (the end point of the ray is recalculated after offsetting the shot). Seen from eye level (that is, perfectly horizontal), the surface area of the sphere of possible offset vectors got smaller by compressing it along the z-axis, but seen from above, it's still the same size! This means player's benefit less from this compression, the greater the difference in z height of the start and end of the shot, i.e. the player and their target!</p>
+
+				</div>
+			</div>
+			
+
+			<div class="posts">
+				
+			</div>
+			
+			<div class="pagination">
+				
+				<a class="btn next" href="/notas-guide/">Next</a>
+			</div>
+		</div>
+
+		<div class="footer">
+	<p>All content © 2013-2020 pix.<br>Powered by <a href="https://www.getblades.org/">Blades</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+</div>
+	</div>
+</body>
+
+</html>
