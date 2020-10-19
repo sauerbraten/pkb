@@ -3,18 +3,18 @@
 
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title> Network Protocol: The Position Packet | pix’s knowledge&nbsp;base </title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix">
 
+	<title>Network Protocol: The Position Packet | pix’s knowledge&nbsp;base</title>
 
-<link rel="stylesheet" href="/css/slim.css">
+	
+	
+	<link rel="stylesheet" href="/assets/slim.css">
 
+	<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
 
-<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
-
-
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
 </head>
 
 <body>
@@ -22,19 +22,16 @@
 		<div class="header">
 	<h1 class="site-title"><a href="/">pix’s knowledge&nbsp;base</a></h1>
 </div>
+
 		<div class="content">
+			
 			<div class="post">
 				<h1 class="post-title"><span>Network Protocol: The Position Packet</span></h1>
-				<span class="post-date">Mar 28, 2014 </span>
+				<span class="post-date">Mar 28, 2014</span>
 				<div class="post-content">
-					
-
-<p>Sauerbraten uses this type of packet to communicate client positions between client(s) and server. A client sends its position to the server every 33 milliseconds, which corresponds to 30 “frames” per second. The server replays packets of clients to all other clients at the same rate.</p>
-
-<h1 id="schema">Schema</h1>
-
+					<p>Sauerbraten uses this type of packet to communicate client positions between client(s) and server. A client sends its position to the server every 33 milliseconds, which corresponds to 30 “frames” per second. The server replays packets of clients to all other clients at the same rate.</p>
+<h1>Schema</h1>
 <p>Here’s what the <code>N_POS</code> packet looks like (byte by byte):</p>
-
 <pre><code>N_POS
 CN
 state
@@ -44,81 +41,53 @@ dir.1 dir.2 roll
 vel.1 [vel.2] veldir.1 veldir.2
 [fall.1 [fall.2] [falldir.1 falldir.2]]
 </code></pre>
-
-<h4 id="n-pos"><code>N_POS</code></h4>
-
+<h4><code>N_POS</code></h4>
 <p>This just indicates to the receiver that this packet is a position packet.</p>
-
-<h4 id="cn"><code>CN</code></h4>
-
-<p>Client number of the player whose position is described in the packet (can be &gt; 128 to describe a bot&rsquo;s position).</p>
-
-<h4 id="state"><code>state</code></h4>
-
+<h4><code>CN</code></h4>
+<p>Client number of the player whose position is described in the packet (can be &gt; 128 to describe a bot's position).</p>
+<h4><code>state</code></h4>
 <p>Describes the parts of the player’s state that are relevant to animating the player model; the bits from low to high are:</p>
-
 <ul>
-<li>3 bits “physical” state (falling, sliding down a slope, moving/standing on floor, etc&hellip;)</li>
+<li>3 bits “physical” state (falling, sliding down a slope, moving/standing on floor, etc...)</li>
 <li>1 bit life sequence (changes at every respawn)</li>
 <li>2 bits move (<code>0b01</code> = forward, <code>0b11</code> = backward, <code>0b00</code> = none)</li>
 <li>2 bits strafe (<code>0b01</code> = left, <code>0b11</code> = right, <code>0b00</code> = none)</li>
 </ul>
-
-<h4 id="flags"><code>flags</code></h4>
-
+<h4><code>flags</code></h4>
 <p>Flags that indicate what optional packets to expect; the bits from low to high are:</p>
-
 <ul>
 <li>3 bits indicating the presence <code>x.3</code>, <code>y.3</code>, <code>z.3</code> respectively</li>
 <li>1 bit indicating whether there is a <code>vel.2</code> byte</li>
 <li>3 bits describing the player’s fall:
-
 <ul>
 <li>first bit indicates presence of the entire <code>[fall.1 [fall.2] falldir.1 falldir.2]</code> block</li>
 <li>second bit indicates whether <code>fall.2</code> is present</li>
 <li>third bit is set when the two <code>falldir</code> bytes are present: when they are not sent in the position packet, it is assumed that the fall vector is pointing straight down (this way “normal” falling down saves the <code>falldir</code> bytes)</li>
-</ul></li>
+</ul>
+</li>
 <li>1 bit indicating whether the player is standing in game clip material</li>
 </ul>
-
-<h4 id="x-1-through-z-3"><code>x.1</code> through <code>z.3</code></h4>
-
+<h4><code>x.1</code> through <code>z.3</code></h4>
 <p>Describe the player’s position in the world (third bytes are only present when the values exceed 2 bytes, see <code>flags</code>).</p>
-
-<h4 id="dir-1-dir-2"><code>dir.1 dir.2</code></h4>
-
+<h4><code>dir.1 dir.2</code></h4>
 <p>Contain (compressed) yaw and pitch of the player’s view/“camera” (i.e. the direction the player is looking in):</p>
-
 <ul>
 <li>all 16 bits (<code>dir.1 | dir.2 &lt;&lt; 8</code>) make up an integer value <code>dir</code></li>
 <li><code>dir mod 360</code> is the yaw value in degrees</li>
 <li><code>(dir / 360) - 90</code> is the pitch value in degrees (-90° to 90°; -90° ~ looking straight down; 90° ~ looking straight up)</li>
 </ul>
-
-<h4 id="roll"><code>roll</code></h4>
-
+<h4><code>roll</code></h4>
 <p>The player’s roll value (with +90 offset like pitch: a <code>0x00</code> byte (= 0) means -90° roll, and <code>0x5A</code> (= 90) means the view is horizontal / 0° roll).</p>
-
-<h4 id="vel-1-vel-2"><code>vel.1 [vel.2]</code></h4>
-
+<h4><code>vel.1 [vel.2]</code></h4>
 <p>Magnitude of the velocity vector, i.e. the speed the player is moving at.</p>
-
-<h4 id="veldir-1-veldir-2"><code>veldir.1 veldir.2</code></h4>
-
+<h4><code>veldir.1 veldir.2</code></h4>
 <p>Yaw and pitch of the velocity vector (compressed like <code>dir.1 dir.2</code>).</p>
-
-<h4 id="fall-1-fall-2"><code>fall.1 [fall.2]</code></h4>
-
+<h4><code>fall.1 [fall.2]</code></h4>
 <p>Magnitude of the fall vector, i.e. the speed the player is falling at.</p>
-
-<h4 id="falldir-1-falldir-2"><code>falldir.1 falldir.2</code></h4>
-
+<h4><code>falldir.1 falldir.2</code></h4>
 <p>Yaw and pitch of the fall vector (compressed like <code>dir.1 dir.2</code>); only sent when it’s not pointing straight down (x ≠ 0 or y ≠ 0 or z &gt; 0).</p>
-
-<h1 id="example">Example</h1>
-
+<h1>Example</h1>
 <p>Here’s an example of a position packet (bytes printed as their decimal representations):</p>
-
 <pre><code>4 1 17 16 11 39 102 35 207 27 134 112 90 132 151 126 35
 
 4         → N_POS
@@ -126,7 +95,7 @@ vel.1 [vel.2] veldir.1 veldir.2
 17        → state (17 = 0b00010001 ~ player moves forward, physical
             state: falling)
 16        → flags (16 = 0b00010000 ~ fall vector is included in the
-            packet)
+	        packet)
 
 11 39     → x (9995 ~ 624.6875)
 102 35    → y (9062 ~ 566.375)
@@ -140,22 +109,24 @@ vel.1 [vel.2] veldir.1 veldir.2
 
 35        → magnitude of the fall vector
 </code></pre>
-
 <p>So in this case, the player is falling (in the air) and at the same time moving forwards. The 0.019° velocity pitch indicates an almost horizontal pitch, possibly shortly before reaching the peak of a jump.</p>
 
 				</div>
 			</div>
-			<div class="pagination">
-				
-				<a class="btn previous " href="/notas-guide/">Prev</a>
-				
-				
-				<a class="btn next " href="/np-connecting-to-server/">Next</a>
+			
+
+			<div class="posts">
 				
 			</div>
+			
+			<div class="pagination">
+				<a class="btn previous" href="/notas-guide/">Prev</a>
+				<a class="btn next" href="/np-connecting-to-server/">Next</a>
+			</div>
 		</div>
+
 		<div class="footer">
-	<p>All content © 2013-2018 pix.<br>Powered by <a href="https://gohugo.io">Hugo</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+	<p>All content © 2013-2020 pix.<br>Powered by <a href="https://www.getblades.org/">Blades</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
 </div>
 	</div>
 </body>

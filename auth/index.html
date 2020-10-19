@@ -3,18 +3,18 @@
 
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title> The Auth Mechanism | pix’s knowledge&nbsp;base </title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix">
 
+	<title>The Auth Mechanism | pix’s knowledge&nbsp;base</title>
 
-<link rel="stylesheet" href="/css/slim.css">
+	
+	
+	<link rel="stylesheet" href="/assets/slim.css">
 
+	<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
 
-<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
-
-
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/apple-touch-icon-144-precomposed.png">
-<link rel="shortcut icon" href="/favicon.ico">
+	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
 </head>
 
 <body>
@@ -22,87 +22,75 @@
 		<div class="header">
 	<h1 class="site-title"><a href="/">pix’s knowledge&nbsp;base</a></h1>
 </div>
+
 		<div class="content">
+			
 			<div class="post">
 				<h1 class="post-title"><span>The Auth Mechanism</span></h1>
-				<span class="post-date">Oct 8, 2013 </span>
+				<span class="post-date">Oct 8, 2013</span>
 				<div class="post-content">
-					
-
-<p>Sauerbraten’s auth mechanism is often misunderstood. This section explains what <code>/auth</code> does, and how it does it.</p>
-
+					<p>Sauerbraten’s auth mechanism is often misunderstood. This section explains what <code>/auth</code> does, and how it does it.</p>
 <p>On a vanilla server (and most modded servers), there are 3 (or 4 if you count normal players) privilege levels: <code>admin</code>, <code>auth</code> and <code>master</code> (plus normal players). <code>admin</code> can do everything on a server, including server configuration things like setting the server’s bot limit. <code>admin</code>, <code>auth</code> and <code>master</code> can do the usual gameplay stuff like change mode, map and mastermode, move players around from team to team or put them into the group of spectators, pause the game, kick people, and so on. <code>auth</code> is a little bit higher than <code>master</code> though, in that <code>auth</code> can kick <code>master</code>, but not the other way around. Also, you can only get <code>auth</code> privileges using the <code>/auth</code> command and a working auth key, while you can get <code>master</code> using <code>/setmaster 1</code> too.
 Players with <code>admin</code> privilege are shown orange on the score board, <code>master</code> and <code>auth</code> are green.</p>
-
 <p>For those looking to write a server mod: note that <code>/auth</code>-functionality is dictated by the master server at <code>sauerbraten.org</code>: If your server does not allow people to use their global auth keys to kick cheaters etc., your server will get banned from the master server and will no longer show up in the server browser.</p>
-
-<h1 id="what-it-looks-like">What it looks like</h1>
-
+<h1>What it looks like</h1>
 <p>First of all, for <code>/auth</code> to do anything, you need an authkey in your <code>autoexec.cfg</code>. An authkey consists of 3 parts and is used in <code>autoexec.cfg</code> like this:</p>
-
 <pre><code>authkey &lt;name&gt; &lt;key&gt; [domain/description]
 </code></pre>
-
 <ul>
 <li><code>authkey</code> is a cubescript command which adds the key to a list of keys in memory at startup.</li>
 <li><code>name</code> is the name for which the key (pair) was generated.</li>
 <li><code>key</code> is actually the private key of a key pair. It’s a 192 bit key, represented as a 48-characters long hexadecimal string.</li>
 <li>The last part is optional, and its defininition is a little blurry. The source code refers to it as <code>desc</code>, but domain is a more accurate name for it. More on why it is used later.</li>
 </ul>
-
-<h1 id="different-methods-of-authentication">Different methods of authentication</h1>
-
-<p>A lot of people don’t know, but <code>/auth</code> can not only be used to authenticate a player globally (the game server asks the master server at sauerbraten.org if it recognizes the player), but also locally (the game server itself recognizes the user). This means a player can have many auth keys in their autoexec.cfg, and when using <code>/auth</code>, the game server could first try to ask for a &ldquo;local&rdquo; authkey. Some hopmod servers use this method. The wahnmod servers (oo, DM, PSL) do not use this method, but give trusted users and admins their privileges after they logged in using the <code>/setmaster &quot;name/password&quot;</code> method. This method is part of their mod; in a vanilla server <code>/setmaster</code> can only be used with one password, and gives you admin privileges (apart from <code>/setmaster 1</code> of course, which gives you master privileges when allowed).</p>
-
+<h1>Different methods of authentication</h1>
+<p>A lot of people don’t know, but <code>/auth</code> can not only be used to authenticate a player globally (the game server asks the master server at sauerbraten.org if it recognizes the player), but also locally (the game server itself recognizes the user). This means a player can have many auth keys in their autoexec.cfg, and when using <code>/auth</code>, the game server could first try to ask for a &quot;local&quot; authkey. Some hopmod servers use this method. The wahnmod servers (oo, DM, PSL) do not use this method, but give trusted users and admins their privileges after they logged in using the <code>/setmaster &quot;name/password&quot;</code> method. This method is part of their mod; in a vanilla server <code>/setmaster</code> can only be used with one password, and gives you admin privileges (apart from <code>/setmaster 1</code> of course, which gives you master privileges when allowed).</p>
 <p>This local authentication method is also the reason why the last part of an authkey is needed, and why <code>domain</code> is a good word for it: the server tells the client which key to use for authenticating. When authenticating globally (at the master server, through the game server), it will tell the client to use the key with description <code>&quot;&quot;</code> (an empty string), because global auth keys do not have the last part (hence optional).</p>
-
-<h1 id="the-internals">The internals</h1>
-
+<h1>The internals</h1>
 <p>When you do <code>/auth</code> in your client, what actually happens is a lot more complicated than sending your key to the server. In fact, the key is never sent to the server, and it would be non-sense to do so, since it is supposed to be secret in order to be sure that whoever is authenticating is really you and noone else.</p>
-
-<p>Instead, the auth mechanism relies on <a href="http://en.wikipedia.org/wiki/Public-key_cryptography"><em>public-key cryptography</em></a>. Whenever someone gives you an authkey, he has actually generated 2 keys, or a key pair, consisting of a public key and a private key. The private key is the one you get. Think of it as a key to a really strong padlock. The other part, the public key, although being called &ldquo;key&rdquo; is actually more like the padlock your key fits into.</p>
-
+<p>Instead, the auth mechanism relies on <a href="http://en.wikipedia.org/wiki/Public-key_cryptography"><em>public-key cryptography</em></a>. Whenever someone gives you an authkey, he has actually generated 2 keys, or a key pair, consisting of a public key and a private key. The private key is the one you get. Think of it as a key to a really strong padlock. The other part, the public key, although being called &quot;key&quot; is actually more like the padlock your key fits into.</p>
 <p>The person who generated the keys will of course be able to keep the private key, too, or even give it away to someone else, but that would not be in their interest, since they generated the key pair to authenticate the player (i.e. be sure it’s them, not someone else). Global auth keys are generated by whoever currently runs sauerbraten.org (probably eihrul, the main developer at the moment). The master server at sauerbraten.org has the public keys of all the global auth keys in existence, except those that have been revoked for abuse.</p>
-
 <p>Back to <code>/auth</code> in your client. What happens under the hood is this (assuming the server does not use local auth, only global auth):</p>
+<pre><code>1. Client → I want to authenticate!                                 → Server
+          ←          OK, you’ll need your global auth key for that. ←
+          → Found it, my name for that key is 'player1'.            →
 
-<pre><code>1. Client → I want to authenticate!                              → Server
-          ←       OK, you’ll need your global auth key for that. ←
-          → Found it, my name for that key is 'player1'.         →
+2. Server → I need an auth challenge for 'player1', please!         → Master
+          ←     Tell him to decrypt this for me: &lt;encrypted bytes&gt;. ←
 
-2. Server → I need an auth challenge for 'player1', please!      → Master
-          ←  Tell him to decrypt this for me: &lt;encrypted bytes&gt;. ←
+3. Client ←                Decrypt these please: &lt;encrypted bytes&gt;. ← Server
+          → Here you go: &lt;decrypted bytes&gt;.                         →
 
-3. Client ←           Decrypt these please: `&lt;encrypted bytes&gt;`. ← Server
-          → Here you go: `&lt;decrypted bytes&gt;`.                    →
+4. Server → This is what he sent me: &lt;decrypted bytes&gt;.             → Master
+          ←                Yup, looks good. He really is 'player1'. ←
 
-4. Server → This is what he sent me: `&lt;decrypted bytes&gt;`.        → Master
-          ←             Yup, looks good. He really is 'player1'. ←
-
-5. Client ←   OK, Master confirmed it. You have auth privileges! ← Server
+5. Client ←      OK, Master confirmed it. You have auth privileges! ← Server
 </code></pre>
-
 <p>Here is a detailed explanation of each of the five steps:</p>
-
 <ol>
-<li>The client asks the server for auth privileges. The server replies by telling the client the auth domain of the auth key that will be needed to authenticate (in this case, the global domain). The client checks if it has an auth key matching the domain. If it finds a fitting key, it tells the server what its &ldquo;auth name&rdquo; for that domain is. If it does not find one, <code>/auth</code> didn’t work and the process of authenticating has failed and is over.</li>
+<li>The client asks the server for auth privileges. The server replies by telling the client the auth domain of the auth key that will be needed to authenticate (in this case, the global domain). The client checks if it has an auth key matching the domain. If it finds a fitting key, it tells the server what its &quot;auth name&quot; for that domain is. If it does not find one, <code>/auth</code> didn’t work and the process of authenticating has failed and is over.</li>
 <li>The server asks the master server to generate a challenge to pass on to the client and provides the auth name it received from the client. The master server looks for a public key belonging to that auth name. If there is none, it will tell the server, which in turn will tell the client that authentication has failed. If there is a public key matching the name, the master server then creates a challenge by encrypting a seed (basically random bytes) with the public key of <code>player1</code>. It also stores the seed (the unencrypted random bytes) locally.</li>
 <li>The server forwards the challenge to the client. The client decrypts the bytes it got sent using the private key. Since the clear text is random, the client doesn’t know yet if his key worked or not. Only the master server will know if the key worked.</li>
-<li>The server forwards the client’s repsonse to the master server. The master server compares the bytes he stored with the bytes the server forwarded to him. When they are the same, the client must have the correct private key, and the master server can be sure that the client trying to authenticate really is who he claims to be (unless the auth key was stolen of course&hellip;).</li>
+<li>The server forwards the client’s repsonse to the master server. The master server compares the bytes he stored with the bytes the server forwarded to him. When they are the same, the client must have the correct private key, and the master server can be sure that the client trying to authenticate really is who he claims to be (unless the auth key was stolen of course...).</li>
 <li>The server now gives the client <code>auth</code> privileges.</li>
 </ol>
 
 				</div>
 			</div>
+			
+
+			<div class="posts">
+				
+			</div>
+			
 			<div class="pagination">
-				
-				<a class="btn previous " href="/pro-settings/">Prev</a>
-				
+				<a class="btn previous" href="/pro-settings/">Prev</a>
 				
 			</div>
 		</div>
+
 		<div class="footer">
-	<p>All content © 2013-2018 pix.<br>Powered by <a href="https://gohugo.io">Hugo</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+	<p>All content © 2013-2020 pix.<br>Powered by <a href="https://www.getblades.org/">Blades</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
 </div>
 	</div>
 </body>
