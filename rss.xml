@@ -3,73 +3,66 @@
     <channel>
     
         <title>pix’s knowledge base</title>
-        <link>//kb.p1x.pw</link>
+        <link>https://kb.p1x.pw</link>
         <description></description>
         <ttl>1440</ttl>
         <generator>blades</generator>
-        <pubDate>Mon, 19 Oct 2020 23:39:26 GMT</pubDate>
+        <pubDate>Tue, 20 Oct 2020 15:21:05 GMT</pubDate>
         
     
     
         <item>
             <title>Projectile spread</title>
-            <link>//kb.p1x.pw/spread/</link>
-            <description><p>How exactly Sauer spreads the chaingun and shotgun rays.</p>
-</description>
+            <link>https://kb.p1x.pw/spread/</link>
+            <description>How exactly Sauer spreads the chaingun and shotgun rays.</description>
             <pubDate>Tue, 20 Oct 2020 00:00:00 GMT</pubDate>
         </item>
         
     
         <item>
             <title>Quick-start Guide for New Players</title>
-            <link>//kb.p1x.pw/notas-guide/</link>
-            <description><p>by notas</p>
-</description>
+            <link>https://kb.p1x.pw/notas-guide/</link>
+            <description>by notas</description>
             <pubDate>Mon, 18 Feb 2019 00:00:00 GMT</pubDate>
         </item>
         
     
         <item>
             <title>Network Protocol: The Position Packet</title>
-            <link>//kb.p1x.pw/np-position-packet/</link>
-            <description><p>Explains the position packet and how its contents are compressed and interpreted.</p>
-</description>
+            <link>https://kb.p1x.pw/np-position-packet/</link>
+            <description>Explains the position packet and how its contents are compressed and interpreted.</description>
             <pubDate>Fri, 28 Mar 2014 00:00:00 GMT</pubDate>
         </item>
         
     
         <item>
             <title>Network Protocol: Connecting to a Server</title>
-            <link>//kb.p1x.pw/np-connecting-to-server/</link>
-            <description><p>Detailed explanation of how a client connects to a server and joins the game.</p>
-</description>
+            <link>https://kb.p1x.pw/np-connecting-to-server/</link>
+            <description>Detailed explanation of how a client connects to a server and joins the game.</description>
             <pubDate>Mon, 17 Mar 2014 00:00:00 GMT</pubDate>
         </item>
         
     
         <item>
             <title>Screen Recording</title>
-            <link>//kb.p1x.pw/screen-recording/</link>
-            <description><p>About the different methods of recording Sauerbraten gameplay.</p>
-</description>
+            <link>https://kb.p1x.pw/screen-recording/</link>
+            <description>About the different methods of recording Sauerbraten gameplay.</description>
             <pubDate>Tue, 12 Nov 2013 00:00:00 GMT</pubDate>
         </item>
         
     
         <item>
             <title>Settings for professional-grade Gaming</title>
-            <link>//kb.p1x.pw/pro-settings/</link>
-            <description><p>Settings that can help you improve your gameplay.</p>
-</description>
+            <link>https://kb.p1x.pw/pro-settings/</link>
+            <description>Settings that can help you improve your gameplay.</description>
             <pubDate>Mon, 14 Oct 2013 00:00:00 GMT</pubDate>
         </item>
         
     
         <item>
             <title>The Auth Mechanism</title>
-            <link>//kb.p1x.pw/auth/</link>
-            <description><p>Explains what the /auth command does, and how it does it.</p>
-</description>
+            <link>https://kb.p1x.pw/auth/</link>
+            <description>Explains what the /auth command does, and how it does it.</description>
             <pubDate>Tue, 08 Oct 2013 00:00:00 GMT</pubDate>
         </item>
         

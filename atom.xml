@@ -2,8 +2,8 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
     <title>pix’s knowledge base</title>
-    <link rel="related" href="//kb.p1x.pw" />
-    <id>//kb.p1x.pw</id>
+    <link rel="related" href="https://kb.p1x.pw" />
+    <id>https://kb.p1x.pw</id>
     
     <author>
         <name>pix</name>
@@ -13,15 +13,14 @@
     
     <subtitle></subtitle>
     <generator>blades</generator>
-    <updated>2020-10-19T23:39:26Z</updated>
+    <updated>2020-10-20T15:21:05Z</updated>
 
 
     <entry>
         <title>Projectile spread</title>
-        <link rel="alternate" href="//kb.p1x.pw/spread/" />
-        <id>//kb.p1x.pw/spread</id>
-        <summary><p>How exactly Sauer spreads the chaingun and shotgun rays.</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/spread/" />
+        <id>https://kb.p1x.pw/spread</id>
+        <summary>How exactly Sauer spreads the chaingun and shotgun rays.</summary>
         <content><p>Today in the Sauerworld Discord (<a href="https://discord.gg/j3kyxtj">join here</a>), we talked about the chaingun (aka minigun, aka machine gun) and shotgun damage and how their rays spread around your crosshair. Games like Counter-Strike aim for realistic projectile spread induced by the weapon's recoil: your crosshair (and with it, projectile vectors) tend to move upwards the longer you burst-fire, and players learn to correct for it by moving the crosshair down. Some weapons in some games also have projectiles spreading outwards around your crosshair, with the spread usually increasing the longer you hold the trigger.</p>
 <p>Sauerbraten, in contrast to most shooter games you may be playing, only has very simple projectile spread mechanics. Since Sauer is open-source, let's understand the details by taking a look behind the scenes! The following code is taken directly from Sauerbraten's <a href="https://sourceforge.net/p/sauerbraten/code/6205/tree/src/fpsgame/weapon.cpp#l118">source code (<code>src/fpsgame/weapon.cpp</code>)</a>:</p>
 <pre><code class="language-c++">void offsetray(const vec &amp;from, const vec &amp;to, int spread, float range, vec &amp;dest)
@@ -63,10 +62,9 @@
 
     <entry>
         <title>Quick-start Guide for New Players</title>
-        <link rel="alternate" href="//kb.p1x.pw/notas-guide/" />
-        <id>//kb.p1x.pw/notas-guide</id>
-        <summary><p>by notas</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/notas-guide/" />
+        <id>https://kb.p1x.pw/notas-guide</id>
+        <summary>by notas</summary>
         <content><p>Resources:</p>
 <ul>
 <li>brightskins: http://sauerleague.org/index.php/skins-snoutx10k</li>
@@ -94,10 +92,9 @@
 
     <entry>
         <title>Network Protocol: The Position Packet</title>
-        <link rel="alternate" href="//kb.p1x.pw/np-position-packet/" />
-        <id>//kb.p1x.pw/np-position-packet</id>
-        <summary><p>Explains the position packet and how its contents are compressed and interpreted.</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/np-position-packet/" />
+        <id>https://kb.p1x.pw/np-position-packet</id>
+        <summary>Explains the position packet and how its contents are compressed and interpreted.</summary>
         <content><p>Sauerbraten uses this type of packet to communicate client positions between client(s) and server. A client sends its position to the server every 33 milliseconds, which corresponds to 30 “frames” per second. The server replays packets of clients to all other clients at the same rate.</p>
 <h1>Schema</h1>
 <p>Here’s what the <code>N_POS</code> packet looks like (byte by byte):</p>
@@ -186,10 +183,9 @@ vel.1 [vel.2] veldir.1 veldir.2
 
     <entry>
         <title>Network Protocol: Connecting to a Server</title>
-        <link rel="alternate" href="//kb.p1x.pw/np-connecting-to-server/" />
-        <id>//kb.p1x.pw/np-connecting-to-server</id>
-        <summary><p>Detailed explanation of how a client connects to a server and joins the game.</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/np-connecting-to-server/" />
+        <id>https://kb.p1x.pw/np-connecting-to-server</id>
+        <summary>Detailed explanation of how a client connects to a server and joins the game.</summary>
         <content><p>Have you ever wondered what’s going on under the hood when you play a game of efficiency ctf, with all that action of players shooting, jumping, dying, picking up flags, and spectators chatting? Here’s the explanation! Read on and learn how Sauerbraten’s networking works.</p>
 <p>Sauerbraten’s networking code is based on the <a href="http://enet.bespin.org/">ENet library</a>. Without going into too much detail, ENet is a layer on top of <a href="https://en.wikipedia.org/wiki/User_Datagram_Protocol">UDP</a> offering (optional) sequential and/or reliable transmission of packets (similar to <a href="https://en.wikipedia.org/wiki/Transmission_Control_Protocol">TCP</a>), the concept of using multiple channels on one connection, and more.</p>
 <p><em>For this article, we assume a simple connect to a vanilla server with default config, nothing fancy like auth-on-connect or server passwords will be covered in-depth.</em></p>
@@ -369,10 +365,9 @@ vel.1 [vel.2] veldir.1 veldir.2
 
     <entry>
         <title>Screen Recording</title>
-        <link rel="alternate" href="//kb.p1x.pw/screen-recording/" />
-        <id>//kb.p1x.pw/screen-recording</id>
-        <summary><p>About the different methods of recording Sauerbraten gameplay.</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/screen-recording/" />
+        <id>https://kb.p1x.pw/screen-recording</id>
+        <summary>About the different methods of recording Sauerbraten gameplay.</summary>
         <content><p>In order to be able to show off how good you are in front of your friends, or to show the world something interesting, or to just record yourself playing for fun, you need to record the screen output rendered by Sauerbraten. To do this, there are different methods; here they are explained:</p>
 <h1>Recording</h1>
 <h2>The built-in <code>/movie</code> command</h2>
@@ -422,10 +417,9 @@ vel.1 [vel.2] veldir.1 veldir.2
 
     <entry>
         <title>Settings for professional-grade Gaming</title>
-        <link rel="alternate" href="//kb.p1x.pw/pro-settings/" />
-        <id>//kb.p1x.pw/pro-settings</id>
-        <summary><p>Settings that can help you improve your gameplay.</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/pro-settings/" />
+        <id>https://kb.p1x.pw/pro-settings</id>
+        <summary>Settings that can help you improve your gameplay.</summary>
         <content><p>Here’s two shots of the same scene, one using maxed-out graphics options with default settings, the other using gameplay-optimized graphics and settings (open these images in new tabs to compare):</p>
 <p><a href="https://i.imgur.com/Mg8WvLl.jpg"><img src="https://i.imgur.com/Mg8WvLl.jpg" alt="pretty" /></a></p>
 <p><a href="https://i.imgur.com/pha36Zc.png"><img src="https://i.imgur.com/pha36Zc.png" alt="ugly" /></a></p>
@@ -469,10 +463,9 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
 
     <entry>
         <title>The Auth Mechanism</title>
-        <link rel="alternate" href="//kb.p1x.pw/auth/" />
-        <id>//kb.p1x.pw/auth</id>
-        <summary><p>Explains what the /auth command does, and how it does it.</p>
-</summary>
+        <link rel="alternate" href="https://kb.p1x.pw/auth/" />
+        <id>https://kb.p1x.pw/auth</id>
+        <summary>Explains what the /auth command does, and how it does it.</summary>
         <content><p>Sauerbraten’s auth mechanism is often misunderstood. This section explains what <code>/auth</code> does, and how it does it.</p>
 <p>On a vanilla server (and most modded servers), there are 3 (or 4 if you count normal players) privilege levels: <code>admin</code>, <code>auth</code> and <code>master</code> (plus normal players). <code>admin</code> can do everything on a server, including server configuration things like setting the server’s bot limit. <code>admin</code>, <code>auth</code> and <code>master</code> can do the usual gameplay stuff like change mode, map and mastermode, move players around from team to team or put them into the group of spectators, pause the game, kick people, and so on. <code>auth</code> is a little bit higher than <code>master</code> though, in that <code>auth</code> can kick <code>master</code>, but not the other way around. Also, you can only get <code>auth</code> privileges using the <code>/auth</code> command and a working auth key, while you can get <code>master</code> using <code>/setmaster 1</code> too.
 Players with <code>admin</code> privilege are shown orange on the score board, <code>master</code> and <code>auth</code> are green.</p>
