@@ -13,7 +13,7 @@
     
     <subtitle></subtitle>
     <generator>blades</generator>
-    <updated>2022-01-12T13:52:36Z</updated>
+    <updated>2022-01-12T13:57:41Z</updated>
 
 
     <entry>
@@ -73,7 +73,6 @@ while(offset.squaredlen() &gt; 0.5f*0.5f);
 <pre><code class="language-c++">vec dir = vec(dest).sub(from).normalize();
 raycubepos(from, dir, dest, range, RAY_CLIPMAT|RAY_ALPHAPOLY);
 </code></pre>
-<p><img src="https://www.sauerworld.org/wp-content/uploads/2020/10/screenshot_1801297.png" alt="shotgun frag on flag carrier" /></p>
 <p>The last two lines of code move the destination (= end) point of the ray along the ray until it collides with something in the world, for example the wall or (ideally) an enemy’s player model. This is done by calculating a normalized vector <code>dir</code> of the ray’s direction from its start (<code>from</code>) and end (<code>dest</code>) vectors, and then relying on the engine to set <code>dest</code> to the point where this vector <code>dir</code>, starting at <code>from</code> intersects with something that would stop a projectile. Essentially, this makes sure the ray doesn’t end in front of the player or goes through her model without hitting or has the ray end somewhere beside the player in the middle of the air.</p>
 <p>Now back to why <code>offset.z /= 2</code> is so interesting here: For you as a player, this line means <strong>shots are more accurate when you are at the same height as your target</strong>!</p>
 <p>If you’re not sure why, think about the sphere of possible offset vectors around the target: when the offset vector’s z component is reduced by the <code>/= 2</code> operation, the height of the sphere of possible offsets around the target is reduced, so it’s no longer a sphere, really, but more of a pumpkin! At the very end, what matters is the 2D projection of this pumpkin towards the players camera (since the depth component of the offset vector in relation to the player’s camera is irrelevant [the end point of the ray is recalculated after offsetting the shot]). Seen from eye level (that is, perfectly horizontal), the surface area of the sphere of possible offset vectors got smaller by compressing it along the z-axis, but seen from above, it’s still the same size! So the more “from above” a player’s perspective onto the target is, the less they benefit from this height compression of the possible offset vectors. The greater the difference in z-height between the start and end of the shot (i.e. the player and their target), the less likely a ray is to be close enough in the center to count as a hit!</p>
