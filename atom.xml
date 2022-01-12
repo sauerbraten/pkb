@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-    <title>pix’s knowledge base</title>
+    <title>p1x’s knowledge base</title>
     <link rel="related" href="https://kb.p1x.pw" />
     <id>https://kb.p1x.pw</id>
     
     <author>
-        <name>pix</name>
+        <name>p1x</name>
         
         
     </author>
     
     <subtitle></subtitle>
     <generator>blades</generator>
-    <updated>2022-01-12T13:57:41Z</updated>
+    <updated>2022-01-12T13:59:42Z</updated>
 
 
     <entry>
