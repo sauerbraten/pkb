@@ -45,11 +45,11 @@ vel.1 [vel.2] veldir.1 veldir.2
 <h4><code>N_POS</code></h4>
 <p>This just indicates to the receiver that this packet is a position packet.</p>
 <h4><code>CN</code></h4>
-<p>Client number of the player whose position is described in the packet (can be &gt; 128 to describe a bot's position).</p>
+<p>Client number of the player whose position is described in the packet (can be &gt; 128 to describe a bot’s position).</p>
 <h4><code>state</code></h4>
 <p>Describes the parts of the player’s state that are relevant to animating the player model; the bits from low to high are:</p>
 <ul>
-<li>3 bits “physical” state (falling, sliding down a slope, moving/standing on floor, etc...)</li>
+<li>3 bits “physical” state (falling, sliding down a slope, moving/standing on floor, etc…)</li>
 <li>1 bit life sequence (changes at every respawn)</li>
 <li>2 bits move (<code>0b01</code> = forward, <code>0b11</code> = backward, <code>0b00</code> = none)</li>
 <li>2 bits strafe (<code>0b01</code> = left, <code>0b11</code> = right, <code>0b00</code> = none)</li>

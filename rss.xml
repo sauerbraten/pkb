@@ -7,7 +7,7 @@
         <description></description>
         <ttl>1440</ttl>
         <generator>blades</generator>
-        <pubDate>Thu, 03 Dec 2020 11:49:50 GMT</pubDate>
+        <pubDate>Wed, 12 Jan 2022 13:52:36 GMT</pubDate>
         
     
     
@@ -60,8 +60,8 @@
         
     
         <item>
-            <title>The Auth Mechanism</title>
-            <link>https://kb.p1x.pw/auth/</link>
+            <title>The Auth Command</title>
+            <link>https://kb.p1x.pw/auth-command/</link>
             <description>Explains what the /auth command does, and how it does it.</description>
             <pubDate>Tue, 08 Oct 2013 00:00:00 GMT</pubDate>
         </item>

@@ -108,7 +108,7 @@
 <li>is the IP that connected banned?</li>
 </ul>
 <p>If everything is OK, it prepares the client’s on-server representation for playing and then sends a welcome packet back to the client that joined.</p>
-<p>The server then welcomes the client by sending a number of packets. Here is a (small) example of that list of packets making up the “welcome packet&quot;:</p>
+<p>The server then welcomes the client by sending a number of packets. Here is a (small) example of that list of packets making up the “welcome packet“:</p>
 <pre><code>2 22 114 101 105 115 115 101 110 0 5 0 33 87 58 1 3 1 -1 61 0 103 111
 111 100 0 -1 17 0 0 100 100 100 1 2 20 20 10 10 20 0 37 1 0 12 1 0 3
 100 100 100 1 2 16 4 3 8 15 0 -1 3 1 67 111 111 107 105 101 0 101 118
@@ -141,9 +141,9 @@
 17                   → N_SPAWNSTATE
 0                    → CN of the client the spawn state date belongs to
                        (= client receiving this packet)
-0                    → client’s life sequence (changes at every
+0                    → client's life sequence (changes at every
 	                   respawn)
-100                  → client’s health
+100                  → client's health
 100                  → maximum health the player can have (can
 	                   change when health boost is picked up)
 100                  → armour
@@ -160,14 +160,14 @@
 
 37                   → N_RESUME
 1                    → CN of another player
-0                    → player 1’s current state (0 = alive, ...)
+0                    → player 1's current state (0 = alive, ...)
 12                   → frags
 1                    → flags player 1 scored
-0                    → time left for player 1’s quad damage, if he
+0                    → time left for player 1's quad damage, if he
                        has it
-3                    → player 1’s life sequence (changes at every
+3                    → player 1's life sequence (changes at every
 	                   respawn)
-100                  → player 1’s health
+100                  → player 1's health
 100                  → maximum health the player can have (can change
                        when health boost is picked up)
 100                  → armour

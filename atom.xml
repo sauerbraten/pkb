@@ -13,7 +13,7 @@
     
     <subtitle></subtitle>
     <generator>blades</generator>
-    <updated>2020-12-03T11:49:50Z</updated>
+    <updated>2022-01-12T13:52:36Z</updated>
 
 
     <entry>
@@ -21,8 +21,8 @@
         <link rel="alternate" href="https://kb.p1x.pw/spread/" />
         <id>https://kb.p1x.pw/spread</id>
         <summary>How exactly Sauer spreads the chaingun and shotgun rays.</summary>
-        <content><p>Today in the Sauerworld Discord (<a href="https://discord.gg/j3kyxtj">join here</a>), we talked about the chaingun (aka minigun, aka machine gun) and shotgun damage and how their rays spread around your crosshair. Games like Counter-Strike aim for realistic projectile spread induced by the weapon's recoil: your crosshair (and with it, projectile vectors) tend to move upwards the longer you burst-fire, and players learn to correct for it by moving the crosshair down. Some weapons in some games also have projectiles spreading outwards around your crosshair, with the spread usually increasing the longer you hold the trigger.</p>
-<p>Sauerbraten, in contrast to most shooter games you may be playing, only has very simple projectile spread mechanics. Since Sauer is open-source, let's understand the details by taking a look behind the scenes! The following code is taken directly from Sauerbraten's <a href="https://sourceforge.net/p/sauerbraten/code/6205/tree/src/fpsgame/weapon.cpp#l118">source code (<code>src/fpsgame/weapon.cpp</code>)</a>:</p>
+        <content><p>Today in the Sauerworld Discord (<a href="https://discord.gg/j3kyxtj">join here</a>), we talked about the chaingun (aka minigun, aka machine gun) and shotgun damage and how their rays spread around your crosshair. Games like Counter-Strike aim for realistic projectile spread induced by the weapon’s recoil: your crosshair (and with it, projectile vectors) tend to move upwards the longer you burst-fire, and players learn to correct for it by moving the crosshair down. Some weapons in some games also have projectiles spreading outwards around your crosshair, with the spread usually increasing the longer you hold the trigger.</p>
+<p>Sauerbraten, in contrast to most other shooter games you may know, has pretty basic projectile spread mechanics. And since Sauer is open-source, we can take a look behind the scenes to understand the intricacies of those mechanics! The following C++ code is taken directly from Sauerbraten’s <a href="https://sourceforge.net/p/sauerbraten/code/6205/tree/src/fpsgame/weapon.cpp#l118">source code (<code>src/fpsgame/weapon.cpp</code>)</a>:</p>
 <pre><code class="language-c++">void offsetray(const vec &amp;from, const vec &amp;to, int spread, float range, vec &amp;dest)
 {
     vec offset;
@@ -40,21 +40,43 @@
 </code></pre>
 <p>Some things to note before we dive into this function:</p>
 <ul>
-<li>the function calculates the offset for a single ray</li>
-<li>it's the only function to calculate ray offset (= projectile spread) in the source code, which means the overall spread calculation is the same for all weapons that have spread (currently, chaingun, shotgun and pistol)</li>
+<li>the function calculates the offset for a single ray (from the straight line, which would be used for example a rifle projectile)</li>
+<li>it’s the only function to calculate ray offset (= projectile spread) in the source code, which means the overall spread calculation is the same for all weapons that have spreading projectiles (currently, chaingun, shotgun and pistol)</li>
 <li>however, it takes a <code>spread</code> argument, so the output is not neccessarily the same for all weapons</li>
 <li>the function is called with the same <code>spread</code> argument for every ray of a weapon, meaning <strong>chaingun spread does not increase with time</strong></li>
 </ul>
-<p>So what does this function do, exactly?</p>
-<p>The first two arguments tell the function <code>from</code> where <code>to</code> where in the map the player is shooting. Then there are the <code>spread</code> and <code>range</code> arguments, which are taken from the weapon's defined settings. (These weapon settings are set in the source code, and can't be changed in-game. Other weapon settings would be how much damage a ray deals and how long it takes to reload.) The last argument, <code>dest</code>, is a variable that will hold the destination of the offset ray after the function ran. (In other programming languages, this would be the return value of the function, so let's just call it that from now on.)</p>
-<p>From a high-level point of view, the function calculates a single ray's destination vector by preparing an offset vector which it adds to the vector pointing from the player to the target, i.e. offsetting the ray from the vector connecting <code>from</code> and <code>to</code>. It returns the vector pointing from <code>from</code> to the offset target as the <code>dest</code> vector.</p>
-<p>The first three lines, <code>vec offset; do ... while ...;</code> prepare a vector variable with three components (x, y and z) and try random values between -0.5 and 0.5 for each component, until it finds a vector where x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup> is greater than 0.25. This basically means the offset vector can point in any direction, but its magnitude is limited to a sphere of radius 0.5. Although this explicitly prevents the case that x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup> = 0, it does not mean that this function will never produce a ray that goes exactly straight: the offset vector might point parallel to the direction of the shot, so offsetting the ray will only make it point behind or in front of the original target! You might get lucky and get a straight shot even with your chaingun!</p>
-<p>The next line, <code>offset.mul(...);</code> makes it so long range shots are offset more than short range ones. It uses the shot distance (<code>to.dist(from)</code>), scales it by a magic factor of 1/1024, and then scales it again by the weapon's spread setting (currently 100 for chaingun, 400 for shotgun, 50 for pistol). The entire offset vector is then scaled by the result of all that scaling of the shot distance.</p>
-<p>The following line, <code>offset.z /= 2;</code> is very interesting: <code>z</code> is the up-down axis in Sauer (if you jump, your z coordinate increases, if you fall down like a noob on reissen, it decreases). The <code>/= 2</code> bit means the z component is halfed. We will get to what this means for you as a player later!</p>
-<p><code>dest = vec(offset).add(to);</code> simply defines <code>dest</code> as the position where the offset ray ends, by adding the offset vector to the position vector of the target of the shot.</p>
-<p>The next line ensures that the calculated ray doesn't end where it starts, for reasons I am not sure why. It might have to do with Sauer's spawn kill protection, but it's really just my best guess here. In the cases interesting to us, this will never be the case, so the code inside the braces will run.</p>
-<p>The last two lines of code move the destination of the ray along the ray until it collides with something in the world, for example the wall or (ideally) an enemy's player model. This is done by calculating a normalized vector <code>dir</code> of the ray's direction from its start (<code>from</code>) and end (<code>dest</code>) vectors, and then relying on the engine to set <code>dest</code> to the point where this vector <code>dir</code>, starting at <code>from</code> intersects with something that would stop a projectile. Essentially, this makes sure the ray doesn't end in front of the player or goes through her model without hitting or has the ray end somewhere beside the player in the middle of the air.</p>
-<p>Now back to why <code>offset.z /= 2</code> is so interesting here: For you as a player, this line means <strong>shots are more accurate when you are at the same height as your target</strong>! If it's not obvious, think about the sphere of possible offset vectors around the target: because the offset vector's z component is reduced by the <code>/= 2</code> operation, the sphere of possible offsets around the target is no longer a sphere, but more of a pumpkin! At the very end, what matters is the 2D projection of this pumpkin towards the players camera, since the depth component of the offset vector in relation to the player's camera is irrelevant (the end point of the ray is recalculated after offsetting the shot). Seen from eye level (that is, perfectly horizontal), the surface area of the sphere of possible offset vectors got smaller by compressing it along the z-axis, but seen from above, it's still the same size! This means player's benefit less from this compression, the greater the difference in z height of the start and end of the shot, i.e. the player and their target!</p>
+<p>So what does the code do, exactly? Let’s begin by looking at the function’s input (its arguments) and output:</p>
+<p>The first two arguments tell the function <code>from</code> where <code>to</code> where in the map the player is shooting. Then there are the <code>spread</code> and <code>range</code> arguments, which are taken from the weapon’s defined settings. (These weapon settings are set in the source code, and can’t be changed in-game. Other weapon settings would be how much damage a ray deals and how long it takes to reload.) The last argument, <code>dest</code>, is a variable that will hold the destination of the offset ray after the function ran and is actually the output of the function. (In other programming languages, this would be the function’s return value.)</p>
+<p><img src="https://www.sauerworld.org/wp-content/uploads/2020/10/screenshot_1766047.png" alt="chaingun shooting at flag carrier" /></p>
+<p>From a high-level point of view, the function calculates a single ray’s destination vector by preparing an offset vector which it adds to the vector pointing from the player to the target, i.e. offsetting the ray from the vector connecting <code>from</code> and <code>to</code>. It returns the vector pointing from <code>from</code> to the offset target as the <code>dest</code> vector.</p>
+<p>Let’s go through the function step-by-step:</p>
+<pre><code class="language-c++">vec offset;
+do offset = vec(rndscale(1), rndscale(1), rndscale(1)).sub(0.5f);
+while(offset.squaredlen() &gt; 0.5f*0.5f);
+</code></pre>
+<p>The first three lines prepare a vector variable with three coordinates (x, y and z) and try random values between -0.5 and 0.5 for each coordinate, until it finds a vector where x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup> is greater than 0.25. This basically means the offset vector can point in any direction, but its magnitude is limited to a sphere of radius 0.5. Although this explicitly prevents the case that x<sup>2</sup> + y<sup>2</sup> + z<sup>2</sup> = 0, it does not mean that this function will never produce a ray that goes exactly straight: the offset vector might point parallel to the direction of the shot, so offsetting the ray will only make it point behind or in front of the original target! You might get lucky and get a straight shot even with your chaingun!</p>
+<pre><code class="language-c++">offset.mul((to.dist(from)/1024)*spread);
+</code></pre>
+<p>The next line makes it so that long range shots are offset more than short range ones. It uses the shot distance (<code>to.dist(from)</code>), scales it by a magic factor of 1/1024, and then scales it again by the weapon’s spread setting (currently 100 for chaingun, 400 for shotgun, 50 for pistol). The entire offset vector is then scaled by the result of all that scaling of the shot distance.</p>
+<pre><code class="language-c++">offset.z /= 2;
+</code></pre>
+<p>This line is very interesting: <code>z</code> is the up-down axis in Sauer (if you jump, your z coordinate increases, if you fall down like a noob on reissen, it decreases). The <code>/= 2</code> bit means the z component is halved. We will get back to what this means for us later!</p>
+<pre><code class="language-c++">dest = vec(offset).add(to);
+</code></pre>
+<p>This part simply defines <code>dest</code> as the position where the offset ray ends (for now), by adding the offset vector to the position vector of the target of the shot.</p>
+<pre><code class="language-c++">if(dest != from)
+{
+...
+}
+</code></pre>
+<p>The next bit ensures that the calculated ray doesn’t end where it starts, for reasons I am not sure why. It might have to do with Sauer’s spawn kill protection, but it’s really just my best guess here. For simplicity, let’s assume that will never be the case, so the code inside the braces will be executed next.</p>
+<pre><code class="language-c++">vec dir = vec(dest).sub(from).normalize();
+raycubepos(from, dir, dest, range, RAY_CLIPMAT|RAY_ALPHAPOLY);
+</code></pre>
+<p><img src="https://www.sauerworld.org/wp-content/uploads/2020/10/screenshot_1801297.png" alt="shotgun frag on flag carrier" /></p>
+<p>The last two lines of code move the destination (= end) point of the ray along the ray until it collides with something in the world, for example the wall or (ideally) an enemy’s player model. This is done by calculating a normalized vector <code>dir</code> of the ray’s direction from its start (<code>from</code>) and end (<code>dest</code>) vectors, and then relying on the engine to set <code>dest</code> to the point where this vector <code>dir</code>, starting at <code>from</code> intersects with something that would stop a projectile. Essentially, this makes sure the ray doesn’t end in front of the player or goes through her model without hitting or has the ray end somewhere beside the player in the middle of the air.</p>
+<p>Now back to why <code>offset.z /= 2</code> is so interesting here: For you as a player, this line means <strong>shots are more accurate when you are at the same height as your target</strong>!</p>
+<p>If you’re not sure why, think about the sphere of possible offset vectors around the target: when the offset vector’s z component is reduced by the <code>/= 2</code> operation, the height of the sphere of possible offsets around the target is reduced, so it’s no longer a sphere, really, but more of a pumpkin! At the very end, what matters is the 2D projection of this pumpkin towards the players camera (since the depth component of the offset vector in relation to the player’s camera is irrelevant [the end point of the ray is recalculated after offsetting the shot]). Seen from eye level (that is, perfectly horizontal), the surface area of the sphere of possible offset vectors got smaller by compressing it along the z-axis, but seen from above, it’s still the same size! So the more “from above” a player’s perspective onto the target is, the less they benefit from this height compression of the possible offset vectors. The greater the difference in z-height between the start and end of the shot (i.e. the player and their target), the less likely a ray is to be close enough in the center to count as a hit!</p>
 </content>
         <updated>2020-10-20T00:00:00Z</updated>
     </entry>
@@ -70,7 +92,7 @@
 <li>brightskins: <a href="http://sauerleague.org/index.php/skins-snoutx10k">http://sauerleague.org/index.php/skins-snoutx10k</a></li>
 <li>gameclock, ammobar, better mousefeel and more <a href="http://comed.sauerworld.org/">http://comed.sauerworld.org/</a></li>
 </ul>
-<p>Useful commands that aren't in GUI (type in chat with / in front):</p>
+<p>Useful commands that aren’t in GUI (type in chat with / in front):</p>
 <ul>
 <li><code>texreduce</code> (= <code>picmip</code> in Quake), 0-12 (ex: <code>/texreduce 4</code>)</li>
 <li><code>hudgun</code> (= <code>drawgun</code>), 1|0 (ex: <code>/hudgun 0</code>)</li>
@@ -78,12 +100,12 @@
 </ul>
 <p>Join the Sauerworld Discord server: <a href="https://discord.gg/SNheTc8">https://discord.gg/SNheTc8</a> (use #find-games)</p>
 <p>Peak hours are 10 - 18:00 EST (15:00 to 23:00 GMT), after 18:00 EST you can usually find duels in discord but no team games other than public ictf</p>
-<p>For items duel, try to find a server using the competitive HB mod - HB testing, sp4nk's PCP, and [sQ] servers all have it and are open, while w00p.cc and sp4nk's g4ngb4ng have it but you'll need an established player to unlock them.</p>
+<p>For items duel, try to find a server using the competitive HB mod - HB testing, sp4nk’s PCP, and [sQ] servers all have it and are open, while w00p.cc and sp4nk’s g4ngb4ng have it but you’ll need an established player to unlock them.</p>
 <p>Note that because hit detection in Sauerbraten is clientside a ping of 100 is perfectly fine, and up to 200 is still playable albeit bad.</p>
 <p>Try messaging notas, Redon, or Lokio if you need help or just post in #sauercom in Sauerworld Discord</p>
-<p>PS: if you are kicked randomly from the server 'effic bitches!' it's because the server is run by a fuckwit</p>
+<p>PS: if you are kicked randomly from the server EFFIC_BITCHES it’s because the server is run by a fuckwit</p>
 <hr />
-<p>The above text is a short introduction notas put together originally for people watching his stream. It's supposed to be helpful for new players, especially those already familiar with the genre of Arena FPS.</p>
+<p>The above text is a short introduction notas put together originally for people watching his stream. It’s supposed to be helpful for new players, especially those already familiar with the genre of Arena FPS.</p>
 <p>I just formatted and reposted it here for preservation purposes.</p>
 </content>
         <updated>2019-02-18T00:00:00Z</updated>
@@ -110,11 +132,11 @@ vel.1 [vel.2] veldir.1 veldir.2
 <h4><code>N_POS</code></h4>
 <p>This just indicates to the receiver that this packet is a position packet.</p>
 <h4><code>CN</code></h4>
-<p>Client number of the player whose position is described in the packet (can be &gt; 128 to describe a bot's position).</p>
+<p>Client number of the player whose position is described in the packet (can be &gt; 128 to describe a bot’s position).</p>
 <h4><code>state</code></h4>
 <p>Describes the parts of the player’s state that are relevant to animating the player model; the bits from low to high are:</p>
 <ul>
-<li>3 bits “physical” state (falling, sliding down a slope, moving/standing on floor, etc...)</li>
+<li>3 bits “physical” state (falling, sliding down a slope, moving/standing on floor, etc…)</li>
 <li>1 bit life sequence (changes at every respawn)</li>
 <li>2 bits move (<code>0b01</code> = forward, <code>0b11</code> = backward, <code>0b00</code> = none)</li>
 <li>2 bits strafe (<code>0b01</code> = left, <code>0b11</code> = right, <code>0b00</code> = none)</li>
@@ -264,7 +286,7 @@ vel.1 [vel.2] veldir.1 veldir.2
 <li>is the IP that connected banned?</li>
 </ul>
 <p>If everything is OK, it prepares the client’s on-server representation for playing and then sends a welcome packet back to the client that joined.</p>
-<p>The server then welcomes the client by sending a number of packets. Here is a (small) example of that list of packets making up the “welcome packet&quot;:</p>
+<p>The server then welcomes the client by sending a number of packets. Here is a (small) example of that list of packets making up the “welcome packet“:</p>
 <pre><code>2 22 114 101 105 115 115 101 110 0 5 0 33 87 58 1 3 1 -1 61 0 103 111
 111 100 0 -1 17 0 0 100 100 100 1 2 20 20 10 10 20 0 37 1 0 12 1 0 3
 100 100 100 1 2 16 4 3 8 15 0 -1 3 1 67 111 111 107 105 101 0 101 118
@@ -297,9 +319,9 @@ vel.1 [vel.2] veldir.1 veldir.2
 17                   → N_SPAWNSTATE
 0                    → CN of the client the spawn state date belongs to
                        (= client receiving this packet)
-0                    → client’s life sequence (changes at every
+0                    → client's life sequence (changes at every
 	                   respawn)
-100                  → client’s health
+100                  → client's health
 100                  → maximum health the player can have (can
 	                   change when health boost is picked up)
 100                  → armour
@@ -316,14 +338,14 @@ vel.1 [vel.2] veldir.1 veldir.2
 
 37                   → N_RESUME
 1                    → CN of another player
-0                    → player 1’s current state (0 = alive, ...)
+0                    → player 1's current state (0 = alive, ...)
 12                   → frags
 1                    → flags player 1 scored
-0                    → time left for player 1’s quad damage, if he
+0                    → time left for player 1's quad damage, if he
                        has it
-3                    → player 1’s life sequence (changes at every
+3                    → player 1's life sequence (changes at every
 	                   respawn)
-100                  → player 1’s health
+100                  → player 1's health
 100                  → maximum health the player can have (can change
                        when health boost is picked up)
 100                  → armour
@@ -435,7 +457,7 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
 <p>Why bother doing this? A stable frame rate will result in the same amount of frames being calculated in between each refreshing cycle of the monitor. This gives you about the same amount of “change” with each new frame. This technique uses the maximum possible frame rate while making sure frame changes are smooth (due to multiples of the refresh rate). Would you set <code>maxfps</code> to, say, <code>150</code>, your monitor (assuming a refresh rate of 60Hz) would show you 1 calculated frame with the first cycle and 2 (drawn as one) in the next. Your eyes prefer the constant amount of “change” you get with the method explained above. For more info on this, read about <a href="http://en.wikipedia.org/wiki/Screen_tearing">tearing</a>.</p>
 <h2>Custom player model skins</h2>
 <p>A huge help for your eyes when looking for enemies are custom skins for the playermodels. Most widely used are the <a href="http://mdsauer.blogspot.de/p/snout-skins.html">IronsnoutX10K skins by greenadiss</a>, they are also used in the screenshot above. They are much brighter than the default ones, and you can get them in pink and yellow, too. In combination with using these skins you should enable forcing matching player models (see below) and use the Ironsnout model yourself, to ensure all enemies are shown with the new bright skins.</p>
-<p>On <a href="https://mdsauer.blogspot.de/">greenadiss' modding site</a> you can also find skins for the Ogro playermodel as well as flag skins, transparent hudguns and some custom crosshairs.</p>
+<p>On <a href="https://mdsauer.blogspot.de/">greenadiss’ modding site</a> you can also find skins for the Ogro playermodel as well as flag skins, transparent hudguns and some custom crosshairs.</p>
 <h1>Mouse acceleration</h1>
 <p>A lot of professional players prefer mouse acceleration to be disabled. This will give you 1:1 responsiveness from the distance your mouse travels on the table to the amount you turn in game; regardless of what speed you move your mouse at. Normally, the OS interprets fast mouse movement different from slow mouse movement (using an acceleration factor) and accelerates cursor movement for you. This is nice when clicking around on 2D GUIs, but it can be very confusing in a 3D game. Hence, most players want it off.</p>
 <p>On instructions on how to turn off mouse acceleration in windows, use Google. It’s kind of complicated and involves registry changes. On Linux (using X server) it can be done on-demand using the command <code>xset m 0 0</code>. Note that it will go back to the default value when X restarts, so you should probable write a script and use your desktop’s autostart feature, or remember to execute the command every time you want to play. On OS X, I have no idea, but Google probably knows where to look.</p>
@@ -454,7 +476,7 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
 <li><code>fullbrightmodels 200</code>: makes player models shine bright</li>
 <li><code>texreduce 12</code>: reduces texture quality; think of it as blurring each texture until there is only one main color left, making the map quite ugly but also making it easier to see playermodels (this can make it harder to navigate in maps you don’t know well, so if you have problems, turn it off (<code>texreduce 0</code>) or to a lower level (e.g. <code>texreduce 6</code>).)</li>
 <li><code>bind MOUSE2 togglezoom</code>: binds zoom to right mouse button; you’ll have to get used to jumping with the space bar</li>
-<li><code>bind MOUSE2 [deaths = (getdeaths); togglezoom; onrelease [if (&lt;= (getdeaths) $deaths) [togglezoom]]]</code>: same as before, but zooms out when you release the right mouse button; useful for quickscoping; the <code>getdeaths</code> stuff is in there because Sauerbraten automatically zooms out when you die, so when you die holding the right mouse button, releasing it would zoom in...</li>
+<li><code>bind MOUSE2 [deaths = (getdeaths); togglezoom; onrelease [if (&lt;= (getdeaths) $deaths) [togglezoom]]]</code>: same as before, but zooms out when you release the right mouse button; useful for quickscoping; the <code>getdeaths</code> stuff is in there because Sauerbraten automatically zooms out when you die, so when you die holding the right mouse button, releasing it would zoom in…</li>
 </ul>
 </content>
         <updated>2013-10-14T00:00:00Z</updated>
@@ -462,16 +484,16 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
     
 
     <entry>
-        <title>The Auth Mechanism</title>
-        <link rel="alternate" href="https://kb.p1x.pw/auth/" />
-        <id>https://kb.p1x.pw/auth</id>
+        <title>The Auth Command</title>
+        <link rel="alternate" href="https://kb.p1x.pw/auth-command/" />
+        <id>https://kb.p1x.pw/auth-command</id>
         <summary>Explains what the /auth command does, and how it does it.</summary>
         <content><p>Sauerbraten’s auth mechanism is often misunderstood. This section explains what <code>/auth</code> does, and how it does it.</p>
-<p>On a vanilla server (and most modded servers), there are 3 (or 4 if you count normal players) privilege levels: <code>admin</code>, <code>auth</code> and <code>master</code> (plus normal players). <code>admin</code> can do everything on a server, including server configuration things like setting the server’s bot limit. <code>admin</code>, <code>auth</code> and <code>master</code> can do the usual gameplay stuff like change mode, map and mastermode, move players around from team to team or put them into the group of spectators, pause the game, kick people, and so on. <code>auth</code> is a little bit higher than <code>master</code> though, in that <code>auth</code> can kick <code>master</code>, but not the other way around. Also, you can only get <code>auth</code> privileges using the <code>/auth</code> command and a working auth key, while you can get <code>master</code> using <code>/setmaster 1</code> too.
-Players with <code>admin</code> privilege are shown orange on the score board, <code>master</code> and <code>auth</code> are green.</p>
-<p>For those looking to write a server mod: note that <code>/auth</code>-functionality is dictated by the master server at <code>sauerbraten.org</code>: If your server does not allow people to use their global auth keys to kick cheaters etc., your server will get banned from the master server and will no longer show up in the server browser.</p>
+<p>On a vanilla server (and most modded servers), there are 3 privilege levels: “admin”, “auth” and “master” (or 4 if you count “unprivileged” as a level of privilege). <code>admin</code> can do everything on a server, including server configuration things like setting the server’s bot limit. <code>admin</code>, <code>auth</code> and <code>master</code> can do the usual gameplay stuff like change mode, map and mastermode, move players around from team to team or put them into the group of spectators, pause the game, kick people, and so on. <code>auth</code> is a little bit higher than <code>master</code> though, in that <code>auth</code> can kick <code>master</code>, but not the other way around. Also, you can only get <code>auth</code> privileges using the <code>/auth</code> command and a working auth key, while you can get <code>master</code> using <code>/setmaster 1</code> too.
+Players with admin privilege are shown orange on the score board, masters are green, and players with auth are purple (but were green, just like masters, in older Sauerbraten versions).</p>
+<p>For those looking to write a server mod: note that <code>/auth</code>-functionality is dictated by the master server at <code>master.sauerbraten.org</code>: If your server does not allow people to use their global auth keys to kick cheaters etc., your server will get banned from the master server and will no longer show up in the server browser.</p>
 <h1>What it looks like</h1>
-<p>First of all, for <code>/auth</code> to do anything, you need an authkey in your <code>autoexec.cfg</code>. An authkey consists of 3 parts and is used in <code>autoexec.cfg</code> like this:</p>
+<p>First of all, for <code>/auth</code> to do anything, you need an authkey in your <code>auth.cfg</code>. An authkey consists of 3 parts and is used in <code>auth.cfg</code> like this:</p>
 <pre><code>authkey &lt;name&gt; &lt;key&gt; [domain/description]
 </code></pre>
 <ul>
@@ -481,15 +503,15 @@ Players with <code>admin</code> privilege are shown orange on the score board, <
 <li>The last part is optional, and its defininition is a little blurry. The source code refers to it as <code>desc</code>, but domain is a more accurate name for it. More on why it is used later.</li>
 </ul>
 <h1>Different methods of authentication</h1>
-<p>A lot of people don’t know, but <code>/auth</code> can not only be used to authenticate a player globally (the game server asks the master server at sauerbraten.org if it recognizes the player), but also locally (the game server itself recognizes the user). This means a player can have many auth keys in their autoexec.cfg, and when using <code>/auth</code>, the game server could first try to ask for a &quot;local&quot; authkey. Some hopmod servers use this method. The wahnmod servers (oo, DM, PSL) do not use this method, but give trusted users and admins their privileges after they logged in using the <code>/setmaster &quot;name/password&quot;</code> method. This method is part of their mod; in a vanilla server <code>/setmaster</code> can only be used with one password, and gives you admin privileges (apart from <code>/setmaster 1</code> of course, which gives you master privileges when allowed).</p>
+<p>A lot of people don’t know, but <code>/auth</code> can not only be used to authenticate a player globally (the game server asks the master server at master.sauerbraten.org if it recognizes the player), but also locally (the game server itself recognizes the user). This means a player can have many auth keys in their auth.cfg, and when using <code>/auth</code>, the game server could first try to ask for a “local” authkey. Some hopmod servers use this method. The wahnmod servers (oo, DM, PSL) did not use this method, but gave trusted users and admins their privileges after they logged in using the <code>/setmaster &quot;name/password&quot;</code> method. This method was part of their mod; in a vanilla server, <code>/setmaster</code> can only be used with one password (the <code>adminpassword</code> server variable), and gives you admin privileges (apart from <code>/setmaster 1</code> of course, which gives you master privileges when allowed).</p>
 <p>This local authentication method is also the reason why the last part of an authkey is needed, and why <code>domain</code> is a good word for it: the server tells the client which key to use for authenticating. When authenticating globally (at the master server, through the game server), it will tell the client to use the key with description <code>&quot;&quot;</code> (an empty string), because global auth keys do not have the last part (hence optional).</p>
 <h1>The internals</h1>
-<p>When you do <code>/auth</code> in your client, what actually happens is a lot more complicated than sending your key to the server. In fact, the key is never sent to the server, and it would be non-sense to do so, since it is supposed to be secret in order to be sure that whoever is authenticating is really you and noone else.</p>
-<p>Instead, the auth mechanism relies on <a href="http://en.wikipedia.org/wiki/Public-key_cryptography"><em>public-key cryptography</em></a>. Whenever someone gives you an authkey, he has actually generated 2 keys, or a key pair, consisting of a public key and a private key. The private key is the one you get. Think of it as a key to a really strong padlock. The other part, the public key, although being called &quot;key&quot; is actually more like the padlock your key fits into.</p>
-<p>The person who generated the keys will of course be able to keep the private key, too, or even give it away to someone else, but that would not be in their interest, since they generated the key pair to authenticate the player (i.e. be sure it’s them, not someone else). Global auth keys are generated by whoever currently runs sauerbraten.org (probably eihrul, the main developer at the moment). The master server at sauerbraten.org has the public keys of all the global auth keys in existence, except those that have been revoked for abuse.</p>
+<p>When you do <code>/auth</code> in your client, what actually happens is a lot more complicated than sending your key to the server. In fact, the key is never sent to the server, and it would be wrong to do so, since it is supposed to stay secret. Sending it to the server would mean the server admin could log it and use it to pretend to be you on a different server.</p>
+<p>Instead, the auth mechanism relies on <a href="http://en.wikipedia.org/wiki/Public-key_cryptography"><em>public-key cryptography</em></a>. Whenever someone gives you an authkey, he has actually generated 2 keys, or a key pair, consisting of a public key and a private key. The private key is the one you get. Think of it as a key to a really strong padlock. The other part, the public key, although being called “key” is actually more like the padlock your key fits into.</p>
+<p>The person who generated the keys will of course be able to keep the private key, too, or even give it away to someone else, but that would not be in their interest, since they generated the key pair to authenticate the player (i.e. be sure it’s them, not someone else). Global auth keys are generated by whoever currently runs master.sauerbraten.org (probably eihrul, the main developer at the moment). The master server has the public keys of all the global auth keys in existence, except those that have been revoked for abuse.</p>
 <p>Back to <code>/auth</code> in your client. What happens under the hood is this (assuming the server does not use local auth, only global auth):</p>
-<pre><code>1. Client → I want to authenticate!                                 → Server
-          ←          OK, you’ll need your global auth key for that. ←
+<pre><code class="language-">1. Client → I want to authenticate!                                 → Server
+          ←          OK, you'll need your global auth key for that. ←
           → Found it, my name for that key is 'player1'.            →
 
 2. Server → I need an auth challenge for 'player1', please!         → Master
@@ -505,10 +527,10 @@ Players with <code>admin</code> privilege are shown orange on the score board, <
 </code></pre>
 <p>Here is a detailed explanation of each of the five steps:</p>
 <ol>
-<li>The client asks the server for auth privileges. The server replies by telling the client the auth domain of the auth key that will be needed to authenticate (in this case, the global domain). The client checks if it has an auth key matching the domain. If it finds a fitting key, it tells the server what its &quot;auth name&quot; for that domain is. If it does not find one, <code>/auth</code> didn’t work and the process of authenticating has failed and is over.</li>
+<li>The client asks the server for auth privileges. The server replies by telling the client the auth domain of the auth key that will be needed to authenticate (in this case, the global domain). The client checks if it has an auth key matching the domain. If it finds a fitting key, it tells the server what its “auth name” for that domain is. If it does not find one, <code>/auth</code> didn’t work and the process of authenticating has failed and is over.</li>
 <li>The server asks the master server to generate a challenge to pass on to the client and provides the auth name it received from the client. The master server looks for a public key belonging to that auth name. If there is none, it will tell the server, which in turn will tell the client that authentication has failed. If there is a public key matching the name, the master server then creates a challenge by encrypting a seed (basically random bytes) with the public key of <code>player1</code>. It also stores the seed (the unencrypted random bytes) locally.</li>
 <li>The server forwards the challenge to the client. The client decrypts the bytes it got sent using the private key. Since the clear text is random, the client doesn’t know yet if his key worked or not. Only the master server will know if the key worked.</li>
-<li>The server forwards the client’s repsonse to the master server. The master server compares the bytes he stored with the bytes the server forwarded to him. When they are the same, the client must have the correct private key, and the master server can be sure that the client trying to authenticate really is who he claims to be (unless the auth key was stolen of course...).</li>
+<li>The server forwards the client’s repsonse to the master server. The master server compares the bytes he stored with the bytes the server forwarded to him. When they are the same, the client must have the correct private key, and the master server can be sure that the client trying to authenticate really is who he claims to be (unless the auth key was stolen of course…).</li>
 <li>The server now gives the client <code>auth</code> privileges.</li>
 </ol>
 </content>

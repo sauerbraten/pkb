@@ -45,7 +45,7 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
 <p>Why bother doing this? A stable frame rate will result in the same amount of frames being calculated in between each refreshing cycle of the monitor. This gives you about the same amount of “change” with each new frame. This technique uses the maximum possible frame rate while making sure frame changes are smooth (due to multiples of the refresh rate). Would you set <code>maxfps</code> to, say, <code>150</code>, your monitor (assuming a refresh rate of 60Hz) would show you 1 calculated frame with the first cycle and 2 (drawn as one) in the next. Your eyes prefer the constant amount of “change” you get with the method explained above. For more info on this, read about <a href="http://en.wikipedia.org/wiki/Screen_tearing">tearing</a>.</p>
 <h2>Custom player model skins</h2>
 <p>A huge help for your eyes when looking for enemies are custom skins for the playermodels. Most widely used are the <a href="http://mdsauer.blogspot.de/p/snout-skins.html">IronsnoutX10K skins by greenadiss</a>, they are also used in the screenshot above. They are much brighter than the default ones, and you can get them in pink and yellow, too. In combination with using these skins you should enable forcing matching player models (see below) and use the Ironsnout model yourself, to ensure all enemies are shown with the new bright skins.</p>
-<p>On <a href="https://mdsauer.blogspot.de/">greenadiss' modding site</a> you can also find skins for the Ogro playermodel as well as flag skins, transparent hudguns and some custom crosshairs.</p>
+<p>On <a href="https://mdsauer.blogspot.de/">greenadiss’ modding site</a> you can also find skins for the Ogro playermodel as well as flag skins, transparent hudguns and some custom crosshairs.</p>
 <h1>Mouse acceleration</h1>
 <p>A lot of professional players prefer mouse acceleration to be disabled. This will give you 1:1 responsiveness from the distance your mouse travels on the table to the amount you turn in game; regardless of what speed you move your mouse at. Normally, the OS interprets fast mouse movement different from slow mouse movement (using an acceleration factor) and accelerates cursor movement for you. This is nice when clicking around on 2D GUIs, but it can be very confusing in a 3D game. Hence, most players want it off.</p>
 <p>On instructions on how to turn off mouse acceleration in windows, use Google. It’s kind of complicated and involves registry changes. On Linux (using X server) it can be done on-demand using the command <code>xset m 0 0</code>. Note that it will go back to the default value when X restarts, so you should probable write a script and use your desktop’s autostart feature, or remember to execute the command every time you want to play. On OS X, I have no idea, but Google probably knows where to look.</p>
@@ -64,7 +64,7 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
 <li><code>fullbrightmodels 200</code>: makes player models shine bright</li>
 <li><code>texreduce 12</code>: reduces texture quality; think of it as blurring each texture until there is only one main color left, making the map quite ugly but also making it easier to see playermodels (this can make it harder to navigate in maps you don’t know well, so if you have problems, turn it off (<code>texreduce 0</code>) or to a lower level (e.g. <code>texreduce 6</code>).)</li>
 <li><code>bind MOUSE2 togglezoom</code>: binds zoom to right mouse button; you’ll have to get used to jumping with the space bar</li>
-<li><code>bind MOUSE2 [deaths = (getdeaths); togglezoom; onrelease [if (&lt;= (getdeaths) $deaths) [togglezoom]]]</code>: same as before, but zooms out when you release the right mouse button; useful for quickscoping; the <code>getdeaths</code> stuff is in there because Sauerbraten automatically zooms out when you die, so when you die holding the right mouse button, releasing it would zoom in...</li>
+<li><code>bind MOUSE2 [deaths = (getdeaths); togglezoom; onrelease [if (&lt;= (getdeaths) $deaths) [togglezoom]]]</code>: same as before, but zooms out when you release the right mouse button; useful for quickscoping; the <code>getdeaths</code> stuff is in there because Sauerbraten automatically zooms out when you die, so when you die holding the right mouse button, releasing it would zoom in…</li>
 </ul>
 
 				</div>
@@ -77,7 +77,7 @@ Next, find out your monitor’s refresh rate (probably 60Hz, but check for yours
 			
 			<div class="pagination">
 				<a class="btn previous" href="/screen-recording/">Prev</a>
-				<a class="btn next" href="/auth/">Next</a>
+				<a class="btn next" href="/auth-command/">Next</a>
 			</div>
 		</div>
 
