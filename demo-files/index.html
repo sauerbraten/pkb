@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix, p1x">
+
+	<title>Demo Files | p1x’s knowledge&nbsp;base</title>
+
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml">
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
+	<link rel="stylesheet" href="/assets/slim.css">
+	
+
+	<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+
+	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+	<h1 class="site-title"><a href="/">p1x’s knowledge&nbsp;base</a></h1>
+</div>
+
+		<div class="content">
+			
+			<div class="post">
+				<h1 class="post-title"><span>Demo Files</span></h1>
+				<span class="post-date">Jan 12, 2022</span>
+				<div class="post-content">
+					<p>Sauerbraten offers a way to record and replay matches (as do many other games, especially first-person shooters). In Sauer, these replays are called demos and stored as .dmo files. Demos are usually recorded by the server, showing the server’s view of game events and timing, but there are client mods that allow you to record your own POV as well.</p>
+<h2><code>/recorddemo</code> &amp; <code>/stopdemo</code></h2>
+<p>By default, vanilla servers do not record demos, unless enabled for the next match (see below). However, most popular servers are configured to record demos automatically. Server operators can set <code>autorecorddemo 1</code> in server-init.cfg to do so.</p>
+<p>For servers that do not automatically record demos, privileged users can enable recording of the next game using <code>/recorddemo 1</code>. To disable recording for the next match, use <code>/recorddemo 0</code>. To stop recording the current match, there is <code>/stopdemo</code>. The privilege required to use these commands depends on the server; by default, only admins are allowed to use them, and server operators can enable the commands for master and auth by setting <code>restrictdemos 0</code> in their server-init.cfg.</p>
+<h2><code>/getdemo</code> &amp; <code>/listdemos</code></h2>
+<p>Servers will announce at the start of the game if they are recording the game. When you play e.g. forge and see “recording demo”, you know you can wait until the game is over and the next map is loaded (could be reissen), and then call <code>/getdemo</code> to download the rpelay of the game that ended last, i.e. the match on forge.</p>
+<p>You can use <code>/listdemos</code> to get an overview of the demos the server will let you download. (Usually, only the last 5 or so matches are kept for you to download.) Use <code>/getdemo N</code> where N is the number of a demo listed by <code>/listdemos</code> to fetch that particular game’s replay.</p>
+<h2><code>/demo</code> &amp; <code>/seekdemo</code></h2>
+<p>To watch the match recorded in a demo file, you use the <code>/demo</code> command. It will automatically go through the files you downloaded using <code>/getdemo</code> if you press TAB after typing <code>/demo</code> and SPACE. While the game runs, you are a spectator with the special client number “-1”. Use <code>/gamespeed N</code> to make the game run slower or faster (<code>N</code> is in percent, so 100 is normal speed, 50 is half speed, 1000 is super fast).</p>
+<p>There is also <code>/seekdemo -MM:SS</code> to skip forward to when there were <code>MM</code> minutes and <code>SS</code> seconds remaining. (<code>/seekdemo MM:SS</code> works as well and will seek to when <code>MM</code> minutes and <code>SS</code> seconds had been played, but that’s decidedly less useful.)</p>
+<h2>Client-side Demo recording</h2>
+<p>Since demo files are basically just captures of the network packets sent a server (see below), it’s not too difficult to record a player’s POV of the game by recording the network packets arriving at the client instead. (Some network packets that originate at a client, like N_SHOT, aren’t echoed from the server to the source client, and so have to be injected individually, but it works.) Thomas’ wc-ng as well as my p1xbraten client mod have client-side demo recording built in.</p>
+<h3>wc-ng</h3>
+<p>wc-ng has the commands <code>/recordclientdemo</code> and <code>/stopclientdemo</code>. They work very similar to the commands to manage server-side demo recording:</p>
+<ul>
+<li><code>/recordclientdemo N</code>: schedules a recording of the next match (<code>N</code> is the name of the demo file to record to)</li>
+<li><code>/stopclientdemo</code>: stops an ongoing recording of the current match</li>
+</ul>
+<p>wc-ng also embeds some game meta data into client-side demo recordings and lets you search your demo files for player names for example. Documentation is a bit scarce, but you can find out more in <a href="https://github.com/tpoechtrager/wc-ng/blob/e9201821b81bc36d155fa8e6eb44d9ff373f257a/doc/WC_README.html">WC_README.html</a>. As far as I know, it’s not possible in wc-ng to start recording immediately (even though the code for it seems to be there).</p>
+<h3>p1xbraten</h3>
+<p>In p1xbraten, I also added the <code>/recordclientdemo</code> and <code>/stopclientdemo</code> commands. <code>/stopclientdemo</code> works just like in wc-ng, but <code>/recordclientdemo</code> is a bit different:</p>
+<ul>
+<li><code>/recordclientdemo &lt;0|1|2&gt;</code>: 1 schedules, 0 cancels demo recording for the next match; 2 starts recording a demo immediately</li>
+<li><code>/stopclientdemo</code> command: stops an ongoing recording</li>
+</ul>
+<p>p1xbraten uses the current date, time, map and mode to name client-side demos automatically.</p>
+<h2>.dmo file format</h2>
+<p>The Sauerbraten demo file format is closely related to the network protocol. All communication between the server and the client is based on many individual packets of data. Usually, replays are recorded by the server, meaning demo files are created on the server.</p>
+<p>Demo files use compression (gzip) to reduce file size. (In fact, you can just run <code>gunzip --suffix=dmo awsome_game.dmo</code> to get the raw bytes Sauerbraten will process when playing back the file.) If you decompress a .dmo file, you find at the beginning of the file the “demo header” telling Sauerbraten what to expect in the remaining bytes:</p>
+<ul>
+<li>first, it contains the magic bytes “SAUERBRATEN_DEMO” so Sauer can be sure there’s demo data contained in the gzip stream,</li>
+<li>then there is the demo file format version (so Sauer can inform the user (in case a newer version was used to record this file) that it will not be able to read the stream correctly),</li>
+<li>and finally, the network protocol version number that was used while recording is included (for the same reason as above).</li>
+</ul>
+<p>After the header, the file simply contains all network packets the server would have sent to a spectator of the live match (in chronological order). Each packet is prefixed with a small header that has three fields, holding information required to replay the game correctly:</p>
+<ul>
+<li>the time when the packet was sent (relative to the start of the game)</li>
+<li>the channel the packet was sent on (0 or 1, read more <strong>HERE</strong>)</li>
+<li>the size of the packet (so the code know how many bytes to read before trying to parse the packet)</li>
+</ul>
+<p>To replay the match, the game loop continously looks at the next packet’s timestamp and when the game clock advances to the time the packet was originally sent, it will interpret it as if it just came from a real server.</p>
+
+				</div>
+			</div>
+			
+
+			<div class="posts">
+				
+			</div>
+			
+			<div class="pagination">
+				
+				<a class="btn next" href="/spread/">Next</a>
+			</div>
+		</div>
+
+		<div class="footer">
+	<p>All content © 2013-2022 p1x.<br>Powered by <a href="https://www.getblades.org/">Blades</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+</div>
+	</div>
+</body>
+
+</html>
