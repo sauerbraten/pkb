@@ -1,9 +1,30 @@
+:root {
+  --main-bg-color: white;
+  --main-text-color: black;
+  --secondary-text-color: #777;
+  --subtle-text-color: #ccc;
+  --link-color: #295cb9;
+  --secondary-bg-color: #f9f9f9;
+  --main-border-color: #ccc;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --main-bg-color: black;
+    --main-text-color: white;
+    --subtle-text-color: #555;
+    --secondary-bg-color: #333;
+    --main-border-color: #555;
+  }
+}
+
 html {
   box-sizing: border-box; }
 
 body {
   margin: 0;
-  color: #111;
+  background: var(--main-bg-color);
+  color: var(--main-text-color);
   font-family: source-sans-pro, sans-serif;
   line-height: 1.75;
   overflow-y: scroll; }
@@ -34,7 +55,7 @@ th {
 
 tbody tr:nth-child(odd) td,
 tbody tr:nth-child(odd) th {
-  background-color: #f5f5f5; }
+  background-color: var(--secondary-bg-color); }
 
 h1,
 h2,
@@ -77,7 +98,7 @@ ul {
   text-align: left; }
 
 a {
-  color: #295cb9;
+  color: var(--link-color);
   text-decoration: none; }
   a:hover, a:focus {
     text-decoration: underline; }
@@ -87,9 +108,9 @@ pre, code {
   font-size: 0.9em; }
 
 code {
-  color: #111;
-  background-color: #f9f9f9;
-  border: 1px solid #ccc;
+  color: var(--main-text-color);
+  background-color: var(--secondary-bg-color);
+  border: 1px solid var(--main-border-color);
   border-radius: 3px;
   padding: 0 .15em; }
 
@@ -103,7 +124,7 @@ pre {
   white-space: pre-wrap;
   word-break: break-all;
   word-wrap: break-word;
-  background-color: #f9f9f9; }
+  background-color: var(--secondary-bg-color); }
   pre code {
     padding: 0;
     color: inherit;
@@ -113,17 +134,17 @@ pre {
 blockquote {
   padding: 0.5rem 1rem;
   margin: 0.8rem 0 0.8rem -1.5rem;
-  color: #777;
-  border-left: 0.3rem solid #ccc; }
+  color: var(--secondary-text-color);
+  border-left: 0.3rem solid var(--main-border-color); }
   blockquote p:last-child {
     margin-bottom: 0; }
 
 button,
 .btn {
   background-image: none;
-  border: 1px solid #ccc;
+  border: 1px solid var(--main-border-color);
   border-radius: 5px;
-  color: #ccc;
+  color: var(--subtle-text-color);
   cursor: pointer;
   display: inline-block;
   font-family: inherit;
@@ -144,15 +165,15 @@ button,
   button:hover, button:focus,
   .btn:hover,
   .btn:focus {
-    color: #777;
-    border: 1px solid #777;
+    color: var(--secondary-text-color);
+    border: 1px solid var(--secondary-text-color);
     -webkit-transition: all 0.3s;
             transition: all 0.3s;
     text-decoration: none; }
   button:active,
   .btn:active {
-    color: #111;
-    border: 1px solid #111;
+    color: var(--main-text-color);
+    border: 1px solid var(--main-text-color);
     -webkit-transition: all 0.3s;
             transition: all 0.3s; }
 
@@ -165,7 +186,7 @@ button,
   font-size: 2.75rem;
   text-align: center; }
   .site-title a {
-    color: #111; }
+    color: var(--main-text-color); }
   .site-title a:hover {
     text-decoration: none; }
 
@@ -197,28 +218,28 @@ button,
     float: right; }
 
 .footer {
-  color: #ccc;
+  color: var(--subtle-text-color);
   font-size: 14px;
   text-align: center;
   margin: 2rem 0 1rem; }
   .footer a {
-    color: #777; }
+    color: var(--secondary-text-color); }
 
 .posts .post {
   padding: 0 1em;
   margin: 0 -1em; }
 .posts .post:not(:last-of-type) {
-  border-bottom: 1px solid #ccc; }
+  border-bottom: 1px solid var(--main-border-color); }
 
 .post-title {
   font-size: 2rem;
   margin-top: 1.5rem;
   margin-bottom: 0; }
   .post-title a {
-    color: #111; }
+    color: var(--main-text-color); }
 
 .post-date {
-  color: #777;
+  color: var(--secondary-text-color);
   font-size: .9rem; }
 
 .post-description {
