@@ -13,7 +13,7 @@
     
     <subtitle></subtitle>
     <generator>blades</generator>
-    <updated>2022-02-02T08:28:43Z</updated>
+    <updated>2022-02-02T08:42:45Z</updated>
 
 
     <entry>
@@ -26,24 +26,24 @@
 <p>By default, vanilla servers do not record demos, unless enabled for the next match (see below). However, most popular servers are configured to record demos automatically. Server operators can set <code>autorecorddemo 1</code> in server-init.cfg to do so.</p>
 <p>For servers that do not automatically record demos, privileged users can enable recording of the next game using <code>/recorddemo 1</code>. To disable recording for the next match, use <code>/recorddemo 0</code>. To stop recording the current match, there is <code>/stopdemo</code>. The privilege required to use these commands depends on the server; by default, only admins are allowed to use them, and server operators can enable the commands for master and auth by setting <code>restrictdemos 0</code> in their server-init.cfg.</p>
 <h2><code>/getdemo</code> &amp; <code>/listdemos</code></h2>
-<p>Servers will announce at the start of the game if they are recording the game. When you play e.g. forge and see “recording demo”, you know you can wait until the game is over and the next map is loaded (could be reissen), and then call <code>/getdemo</code> to download the rpelay of the game that ended last, i.e. the match on forge.</p>
-<p>You can use <code>/listdemos</code> to get an overview of the demos the server will let you download. (Usually, only the last 5 or so matches are kept for you to download.) Use <code>/getdemo N</code> where N is the number of a demo listed by <code>/listdemos</code> to fetch that particular game’s replay.</p>
+<p>Servers will announce at the start of the game if they are recording the game. When you play e.g. forge and see “recording demo”, you know you can wait until the game is over and the next map is loaded (could be reissen), and then call <code>/getdemo [F]</code> to download and save the replay of the game that ended last, i.e. the match on forge. The filename (<code>F</code>) is optional, but useful; if not provided, the current date and time will be used.</p>
+<p>You can use <code>/listdemos</code> to get an overview of the demos the server will let you download. (Usually, only the last 5 or so matches are kept for you to download.) Use <code>/getdemo N [F]</code> where N is the number of a demo listed by <code>/listdemos</code> to fetch that particular game’s replay.</p>
 <h2><code>/demo</code> &amp; <code>/seekdemo</code></h2>
 <p>To watch the match recorded in a demo file, you use the <code>/demo</code> command. It will automatically go through the files you downloaded using <code>/getdemo</code> if you press TAB after typing <code>/demo</code> and SPACE. While the game runs, you are a spectator with the special client number “-1”. Use <code>/gamespeed N</code> to make the game run slower or faster (<code>N</code> is in percent, so 100 is normal speed, 50 is half speed, 1000 is super fast).</p>
 <p>There is also <code>/seekdemo -MM:SS</code> to skip forward to when there were <code>MM</code> minutes and <code>SS</code> seconds remaining. (<code>/seekdemo MM:SS</code> works as well and will seek to when <code>MM</code> minutes and <code>SS</code> seconds had been played, but that’s decidedly less useful.)</p>
 <h2>Client-side Demo recording</h2>
-<p>Since demo files are basically just captures of the network packets sent a server (see below), it’s not too difficult to record a player’s POV of the game by recording the network packets arriving at the client instead. (Some network packets that originate at a client, like N_SHOT, aren’t echoed from the server to the source client, and so have to be injected individually, but it works.) Thomas’ wc-ng as well as my p1xbraten client mod have client-side demo recording built in.</p>
+<p>Since demo files are basically just captures of the network packets sent a server (see below), it’s not too difficult to record a player’s POV of the game by recording the network packets arriving at the client instead. (Some network packets that originate at a client, like N_SHOT, aren’t echoed from the server to the source client, and so have to be injected individually, but it works.) Thomas’ <a href="https://github.com/tpoechtrager/wc-ng">wc-ng</a> as well as <a href="https://mmm.page/p1x.braten">p1xbraten</a> have client-side demo recording built in.</p>
 <h3>wc-ng</h3>
 <p>wc-ng has the commands <code>/recordclientdemo</code> and <code>/stopclientdemo</code>. They work very similar to the commands to manage server-side demo recording:</p>
 <ul>
-<li><code>/recordclientdemo N</code>: schedules a recording of the next match (<code>N</code> is the name of the demo file to record to)</li>
+<li><code>/recordclientdemo F</code>: schedules a recording of the next match (<code>F</code> is the file name to record to)</li>
 <li><code>/stopclientdemo</code>: stops an ongoing recording of the current match</li>
 </ul>
-<p>wc-ng also embeds some game meta data into client-side demo recordings and lets you search your demo files for player names for example. Documentation is a bit scarce, but you can find out more in <a href="https://github.com/tpoechtrager/wc-ng/blob/e9201821b81bc36d155fa8e6eb44d9ff373f257a/doc/WC_README.html">WC_README.html</a>. As far as I know, it’s not possible in wc-ng to start recording immediately (even though the code for it seems to be there).</p>
+<p>wc-ng also embeds some game meta data into client-side demo recordings and let’s you search your demo files for player names for example. Documentation is a bit scarce, but you can find out more in <a href="https://github.com/tpoechtrager/wc-ng/blob/e9201821b81bc36d155fa8e6eb44d9ff373f257a/doc/WC_README.html">WC_README.html</a>. As far as I know, it’s not possible in wc-ng to start recording immediately (even though the code for it seems to be there).</p>
 <h3>p1xbraten</h3>
 <p>In p1xbraten, I also added the <code>/recordclientdemo</code> and <code>/stopclientdemo</code> commands. <code>/stopclientdemo</code> works just like in wc-ng, but <code>/recordclientdemo</code> is a bit different:</p>
 <ul>
-<li><code>/recordclientdemo &lt;0|1|2&gt;</code>: 1 schedules, 0 cancels demo recording for the next match; 2 starts recording a demo immediately</li>
+<li><code>/recordclientdemo 0|1|2</code>: 1 schedules, 0 cancels demo recording for the next match; 2 starts recording a demo immediately</li>
 <li><code>/stopclientdemo</code> command: stops an ongoing recording</li>
 </ul>
 <p>p1xbraten uses the current date, time, map and mode to name client-side demos automatically.</p>
