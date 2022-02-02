@@ -67,7 +67,7 @@
 <p>After the header, the file simply contains all network packets the server would have sent to a spectator of the live match (in chronological order). Each packet is prefixed with a small header that has three fields, holding information required to replay the game correctly:</p>
 <ul>
 <li>the time when the packet was sent (relative to the start of the game)</li>
-<li>the channel the packet was sent on (0 or 1, read more <strong>HERE</strong>)</li>
+<li>the channel the packet was sent on (0 or 1, read more <a href="/np-connecting-to-server/">here</a>)</li>
 <li>the size of the packet (so the code know how many bytes to read before trying to parse the packet)</li>
 </ul>
 <p>To replay the match, the game loop continously looks at the next packet’s timestamp and when the game clock advances to the time the packet was originally sent, it will interpret it as if it just came from a real server.</p>
