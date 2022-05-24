@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+	<meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix, p1x">
+
+	<title>Content locations | p1x’s knowledge&nbsp;base</title>
+
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml">
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
+	<link rel="stylesheet" href="/assets/slim.css">
+	
+
+	<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+
+	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
+</head>
+
+<body>
+	<div class="container">
+		<div class="header">
+	<h1 class="site-title"><a href="/">p1x’s knowledge&nbsp;base</a></h1>
+</div>
+
+		<div class="content">
+			
+			<div class="post">
+				<h1 class="post-title"><span>Content locations</span></h1>
+				<span class="post-date">May 24, 2022</span>
+				<div class="post-content">
+					<p>Sauerbraten uses overlaying to enable loading content from different locations. I say locations because not only can you tell Sauer to use certain directories, it can also use .zip files directly!</p>
+<p>There are four types of content locations:</p>
+<ul>
+<li>zip archives (added using the <code>addzip</code> command)</li>
+<li>the user directory (only one, defined using <code>-q</code> CLI flag)</li>
+<li>package directories (zero or more, added using <code>-k</code> CLI flag)</li>
+<li>the installation root directory</li>
+</ul>
+<p>A content file is loaded by first looking for it inside all zip archives (in the order they were added), then in the user directory, then inside all package directories (in the order they were added), and lastly in the installation directory.</p>
+<p>When writing a file, Sauer first tries to overwrite an existing file in one of the content directories by looking at them in the same order it tries to load content. If no matching file is found, a new file is written to the user directory. If no user directory is found, the file is written to the installation directory. Zip archives are never modified.</p>
+<h1>User Directory</h1>
+<p>If you have ever downloaded custom content, you were probably (hopefully) told to not put it into Sauerbraten’s installation folder, but into the user directory instead.</p>
+<p>The user directory is used for content as well as configuration files. It usually contains custom maps, config files, demos and screenshots.</p>
+<p>The path to the user directory is set by the OS-specific launch script, for example <em>sauerbraten.bat</em> on Windows, by passing a <code>-q&lt;path&gt;</code> command-line argument to the game binary. By default, sauerbraten.bat uses <code>$HOME\My Games\Sauerbraten</code>. <code>$HOME</code> is (unintuitively) <em>not</em> substituted with the path to your user folder, for example <code>C:\Users\Tom</code>, but with the path to your “My Documents” folder, for example <code>C:\Users\Tom\My Documents</code>, so the actual location becomes <code>C:\Users\Tom\My Documents\My Games\Sauerbraten</code>.</p>
+<p>On Linux, the launch script is called <em>sauerbraten_unix</em> and it uses <code>$HOME/.sauerbraten</code> as user directory. On macOS, the script is Sauerbraten.app/Contents/MacOS/sauerbraten, and uses <code>$HOME/Library/Application Support/Sauerbraten</code>. (On these systems, <code>$HOME</code> is substituted with what you think it is, your home directory.)</p>
+<p>By letting the launch script define the user content directory, you are very flexible with your setup. For example, you can have several Sauer installations that each use a different user directory by opening the sauerbraten.bat file and changing the path. (This is very much advised for parallel installations of different editions of Sauer, since Sauer overwrites config.cfg every time you quit and configs are not compatible between editions.)</p>
+<h1>Package Directories</h1>
+<p>To load content from additional directories, you can pass <code>-k&lt;path&gt;</code> to the game binary. Content is only loaded from, never written to a package directory. If the path you specify contains <code>/packages/bla</code>, only files starting with that prefix are tried to be loaded from that package directory.</p>
+
+				</div>
+			</div>
+			
+
+			<div class="posts">
+				
+			</div>
+			
+			<div class="pagination">
+				
+				<a class="btn next" href="/demo-files/">Next</a>
+			</div>
+		</div>
+
+		<div class="footer">
+	<p>All content © 2013-2022 p1x.<br>Powered by <a href="https://www.getblades.org/">Blades</a>. Theme based on <a href="https://github.com/zhe/hugo-theme-slim">Slim</a> by Zhe Zhang.</p>
+</div>
+	</div>
+</body>
+
+</html>
