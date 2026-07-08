@@ -2,20 +2,18 @@
 <html>
 
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-	<meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix, p1x">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <meta name="keywords" content="cube 2, sauerbraten, faq, sauerworld, pix, p1x">
 
-	<title>The Auth Command | p1x’s knowledge&nbsp;base</title>
+    <title>The Auth Command | p1x’s knowledge&nbsp;base</title>
 
-	<link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml">
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
-	<link rel="stylesheet" href="/assets/slim.css">
-	
+    
+    
 
-	<script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
-
-	<link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
+    <link rel="stylesheet" href="/assets/slim.css">
+    <script src="//use.edgefonts.net/source-sans-pro:n3,n4,i4,n7;source-code-pro:n4,n7;source-serif-pro:n3,n4,n7.js"></script>
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%22100%22>🦉</text></svg>">
 </head>
 
 <body>
@@ -45,14 +43,14 @@ Players with admin privilege are shown orange on the score board, masters are gr
 <li>The last part is optional, and its defininition is a little blurry. The source code refers to it as <code>desc</code>, but domain is a more accurate name for it. More on why it is used later.</li>
 </ul>
 <h1>Different methods of authentication</h1>
-<p>A lot of people don’t know, but <code>/auth</code> can not only be used to authenticate a player globally (the game server asks the master server at master.sauerbraten.org if it recognizes the player), but also locally (the game server itself recognizes the user). This means a player can have many auth keys in their auth.cfg, and when using <code>/auth</code>, the game server could first try to ask for a “local” authkey. Some hopmod servers use this method. The wahnmod servers (oo, DM, PSL) did not use this method, but gave trusted users and admins their privileges after they logged in using the <code>/setmaster &quot;name/password&quot;</code> method. This method was part of their mod; in a vanilla server, <code>/setmaster</code> can only be used with one password (the <code>adminpassword</code> server variable), and gives you admin privileges (apart from <code>/setmaster 1</code> of course, which gives you master privileges when allowed).</p>
-<p>This local authentication method is also the reason why the last part of an authkey is needed, and why <code>domain</code> is a good word for it: the server tells the client which key to use for authenticating. When authenticating globally (at the master server, through the game server), it will tell the client to use the key with description <code>&quot;&quot;</code> (an empty string), because global auth keys do not have the last part (hence optional).</p>
+<p>A lot of people don’t know, but <code>/auth</code> can not only be used to authenticate a player globally (the game server asks the master server at master.sauerbraten.org if it recognizes the player), but also locally (the game server itself recognizes the user). This means a player can have many auth keys in their auth.cfg, and when using <code>/auth</code>, the game server could first try to ask for a “local” authkey. Some hopmod servers use this method. The wahnmod servers (oo, DM, PSL) did not use this method, but gave trusted users and admins their privileges after they logged in using the <code>/setmaster "name/password"</code> method. This method was part of their mod; in a vanilla server, <code>/setmaster</code> can only be used with one password (the <code>adminpassword</code> server variable), and gives you admin privileges (apart from <code>/setmaster 1</code> of course, which gives you master privileges when allowed).</p>
+<p>This local authentication method is also the reason why the last part of an authkey is needed, and why <code>domain</code> is a good word for it: the server tells the client which key to use for authenticating. When authenticating globally (at the master server, through the game server), it will tell the client to use the key with description <code>""</code> (an empty string), because global auth keys do not have the last part (hence optional).</p>
 <h1>The internals</h1>
 <p>When you do <code>/auth</code> in your client, what actually happens is a lot more complicated than sending your key to the server. In fact, the key is never sent to the server, and it would be wrong to do so, since it is supposed to stay secret. Sending it to the server would mean the server admin could log it and use it to pretend to be you on a different server.</p>
 <p>Instead, the auth mechanism relies on <a href="http://en.wikipedia.org/wiki/Public-key_cryptography"><em>public-key cryptography</em></a>. Whenever someone gives you an authkey, he has actually generated 2 keys, or a key pair, consisting of a public key and a private key. The private key is the one you get. Think of it as a key to a really strong padlock. The other part, the public key, although being called “key” is actually more like the padlock your key fits into.</p>
 <p>The person who generated the keys will of course be able to keep the private key, too, or even give it away to someone else, but that would not be in their interest, since they generated the key pair to authenticate the player (i.e. be sure it’s them, not someone else). Global auth keys are generated by whoever currently runs master.sauerbraten.org (probably eihrul, the main developer at the moment). The master server has the public keys of all the global auth keys in existence, except those that have been revoked for abuse.</p>
 <p>Back to <code>/auth</code> in your client. What happens under the hood is this (assuming the server does not use local auth, only global auth):</p>
-<pre><code class="language-">1. Client → I want to authenticate!                                 → Server
+<pre><code>1. Client → I want to authenticate!                                 → Server
           ←          OK, you'll need your global auth key for that. ←
           → Found it, my name for that key is 'player1'.            →
 
@@ -83,7 +81,7 @@ Players with admin privilege are shown orange on the score board, masters are gr
 			<div class="posts">
 				
 			</div>
-			
+
 			<div class="pagination">
 				<a class="btn previous" href="/pro-settings/">Prev</a>
 				
